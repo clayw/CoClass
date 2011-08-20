@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load show_stars %}
+{% block title %}{{ course.title }} | CoClass{% endblock title %}
+
+{% block stylesheets %}
+<script>
+google.load("prototype", "1.6.1.0");
+</script>
+{% show_stars_script %}
+<script type="text/javascript">
+<!--
+function starcallback(id, pos) {
+  jQuery.ajax({url: '/c/rate/{{ course.b36 }}/'+pos+'/{{ user }}/',
+  });
+}
+//-->
+</script>
+{% endblock stylesheets %}
+
+{% block left %}
+{# {% include "course_title_big.html" %}#}
+<h1>
+  {% if course.url %}
+    <a href="{{ course.url }}">{{ course.title }}</a> <span style="font-size:7pt;color:#cfc;">({{ course.url }})</span> 
+  {% else %}
+    {{ course.title }}
+  {% endif %}
+  {% if course.institution %}<span id="c_num">({{ course.course_number }} from {{ course.institution }})</span>{% endif %}
+  <span style="float:right;">
+    {% if hcm.editor %}<a href="{% url edit-host-class host_class.b36 %}">edit</a>{% endif %}
+  </span>
+</h1>
+
+<h3>Description</h3>
+<p>{{ course.description|linebreaksbr }}</p>
+{% if course.prereqs %}
+<h3>Prerequisites</h3>
+<p>{{ course.prereqs|linebreaksbr }}</p>
+{% endif %}
+<input type="hidden" id="session-id" name="session-id" value="{{ session.pk }}" />
+{% include "classes/incl/view_session.html" %}
+{% endblock left %}
+
+{% block right %}
+<div> <fb:like href="{{ course.get_absolute_url }}" layout="button" show_faces="false" width="450" action="like" font="trebuchet ms" colorscheme="light" /></div>
+
+<div style="background-color:#efe; padding: 1px 0 6px;">
+  {% if iseditor %}
+  <div class="leftinner">
+    <h1><a href="/c/edit/{{ course.b36 }}/">Edit this class</a></h1>
+  </div>
+  {% endif %}
+<div class="leftinner">
+    <h1><a href="/h/create/{{ course.b36 }}/"><img src="{{ MEDIA_ROOT }}img/hostbutton.png" alt="Host {{ course.title }}" /></a></h1>
+</div>
+<div class="leftinner">
+<h1>Sessions</h1>
+<ol>
+  {% for session in course.course_info_session.all %}
+  <li><a href="{% url view-session course.b36 session.session.uuid %}#session-{{ session.session_number }}">{{ session.session.title }}</a></li>
+  {% endfor %}
+</ol>
+</div>
+<div class="leftinner">
+  <h1>Rating</h1>
+  {% show_stars course.get_rating of 5 round to half on change call starcallback with 1 %} 
+</div>
+{% if editors %}
+<div class="leftinner">
+  <h1>Editors</h1>
+  <ul>
+    {% for editor in editors %}
+    <li><a href="{{ editor.get_absolute_url }}">{{ editor.get_full_name }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% else %}
+{% endif %} 
+</div>
+{% endblock right %}

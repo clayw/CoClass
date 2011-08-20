@@ -1,0 +1,5 @@
+{% if host_members %}
+{% include "accounts/courses_table.html" %}
+{% else %}
+<p>You haven't made any courses. <a href="/h/search/">Create one now!</a></p>
+{% endif %}

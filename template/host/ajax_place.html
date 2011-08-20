@@ -1,0 +1,12 @@
+{% load thumbnail %}
+  <div id="map_canvas"></div>
+  <ul id="photo_list"> 
+  {% if host_class.place.pic.all %}
+    {% for pic in host_class.place.pic.all %}
+    <li><img src="{% thumbnail pic.pic 250x250 crop upscale %}" /></li>
+    {% endfor %}
+  {% else %}
+    {% comment %}<li><img src="{% thumbnail default.house 250x250 crop upscale %}" /></li>{% endcomment %}
+  {% endif %}
+  </ul>
+

@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+{% block title %}Hosting {{ course.title }}{% endblock title %}
+
+{% block stylesheets%}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/make.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/calendar.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}ui/css/custom-theme/jquery-ui-1.8.1.custom.css" type="text/css" />
+<script type="text/javascript">
+google.load("jqueryui", "1.8.1");
+var li_ctr = 0, photo_ctr = 1;
+$(function() {
+    currdate = new Date();
+    make_calendar('calendar', true);
+    
+    $('#datepicker').datepicker({ minDate: 0 });
+
+    $('#fill-cal').click(function () {
+      var sDate = $('#datepicker').datepicker('getDate');
+      if (!sDate) { alert('select a start date first!'); return false; }
+      if (!any_selected_day()) { alert('select day a day of the week first!'); return false; }
+      sDate.setDate(sDate.getDate() -1);
+
+      var holder = $('.session-holder');
+      for (var ses in holder) {
+        if (holder[ses].id) {
+          var ses_id = holder[ses].id;
+          var ses_sp = ses_id.split('_');
+          if (ses_sp[0] == 'c') {
+            var childs = $('#' + ses_id).children();
+            for (var i in childs) {
+              if (childs[i].className == 'session') {
+                do {sDate.setDate(sDate.getDate() + 1); } while(not_selected_day(sDate.getDay())) ;
+                var hdate = hyphenDate(sDate.toDateString()) +'-'+ $(hdate).children().length;
+                $('#h_'+childs[i].id).val(hdate);
+              }
+            }
+          }
+        }
+      }
+      make_calendar('calendar');
+      return false;
+    });
+
+    var title = $("#add_title"),
+        description = $("#add_description"),
+        video_url = $("#add_video"),
+        allFields = $([]).add(title).add(description),
+        tips = $("#validateTips"),
+        course_id = {{ course.id }};
+
+    function updateTips(t) {
+      tips.text(t).effect("highlight",{},1500);
+    }
+    $("#dialog_add_url").dialog({
+      bgiframe: true,
+      autoOpen: false,
+      height: 300,
+      width: 400,
+      modal: true,
+      buttons: {
+        'Create': function() {
+          var bValid = true;
+          allFields.removeClass('ui-state-error');
+          var diag_this = this; 
+          $.ajax({url: '/c/new_session/', 
+            data: {'course_id': course_id,
+              'video_url': video_url.val(),
+            },
+            success: function (html) { 
+              console.log('success');
+              console.log(html);
+              $('#hiders').append(html);
+              make_all_lis();
+              $(diag_this).dialog('close');
+            }
+          });
+        },
+        Cancel: function() {
+          $(this).dialog('close');
+        },
+      },
+      close: function() {
+        allFields.val('').removeClass('ui-state-error');
+      }
+    });
+    $("#dialog_view").dialog({
+      autoOpen: false,
+    });
+    $("#dialog_edit").dialog({
+      autoOpen: false,    
+    });
+    $('a[href=#v]').click(function(e) {
+      e.preventDefault();
+      var session_number = $(this).parent().parent().attr('id');
+      /*
+      $.ajax({url: , 
+        success: function (html) { 
+          $('#dialog_view').html(html); 
+          $('#dialog_view').dialog('open'); 
+        }
+      });
+      */
+    });
+    $('a[href=#e]').click(function(e) {
+      e.preventDefault();
+      // fill $('#dialog_edit')
+      $('#dialog_edit').dialog('open'); 
+    });
+    $('#add_class').click(function() {
+      $('#dialog_add_url').dialog('open');
+    }).hover(
+      function(){ 
+        $(this).addClass("ui-state-hover"); 
+      },
+      function(){ 
+        $(this).removeClass("ui-state-hover"); 
+      })
+    .mousedown(function(){
+      $(this).addClass("ui-state-active"); 
+    }).mouseup(function(){
+        $(this).removeClass("ui-state-active");
+    });
+
+    $('#days a').click(function() {
+      var selector = $('input[name=check_'+$(this).attr('href').substring(1)+']');
+      if ($(this).hasClass('unselected-day')) {
+        $(this).removeClass('unselected-day');
+        $(this).addClass('selected-day');
+        selector.attr('checked', true);
+      } else { 
+        $(this).removeClass('selected-day');
+        $(this).addClass('unselected-day');
+        selector.attr('checked', false);
+      }
+      return false;
+    });
+    $('form :checkbox').css('display', 'none');
+    var checkboxes = $('form :checkbox');
+    for (var i in checkboxes) {
+      if (checkboxes[i].checked) {
+        $('a[href=#' + checkboxes[i].name.substring(6)+']').click();
+      }
+    }
+    $('a[href*=addphoto]').click(function () {
+      $('#addrform').append('<tr><td></td><td colspan="2"><input type="file" name="photo_'+photo_ctr+'" /></td></tr>');  
+      photo_ctr++;
+      return false;
+    });
+    $('select[name=place]').change(function () {
+      ;
+      if ($(this).val() == '-1') {
+        $('#addressform').css('display', '');
+      } else if ($('#addressform').css('display') != 'none') {
+        $('#addressform').css('display', 'none');
+      }
+    });
+    $('input[name=name]').keyup(function (e) {
+      $('select[name=place] :selected').html($('input[name=name]').val());
+    });
+});
+</script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/calendar.js"></script>
+<style type="text/css">
+</style>
+{% endblock stylesheets %}
+
+{% block main %}
+<div id="makeLeft">
+  <h1><a class="external" target="_blank" href="{{ course.url }}">{{ course.title }}</a> {% if course.institution %}<span id="c_num">({{ course.course_number }} from {{ course.institution }})</span>{% endif %}</h1>
+  <form action="." method="POST" enctype="multipart/form-data">
+    <h3>1. Where do you want to host it?</h3>
+    <select name="place" {% if not places %}style="display:none;"{% endif %}>
+    {% if places %}
+      {% for place in places %}
+      <option value="{{ place.id }}">{{ place.name }}</option> 
+      {% endfor %}
+    {% endif %}
+      <option value="-1">New place...</option>
+    </select>
+    <div id="addressform" {% if places %}style="display:none;"{% endif %}>
+      <table id="addrform">
+        <tr><td>Name</td><td><input type="text" name="name" value="New place..." /></td><td>Country</td><td><select name="country"><option>United States</option</select></td></tr>
+        <tr><td>Address</td><td><input type="text" name="addr" /></td><td>Apt/Unit/etc.</td><td><input type="text" name="apt" /></td></tr>
+        <tr><td>City</td><td><input type="text" name="city" /></td><td>State</td><td><input type="text" name="state" /></td></tr>
+        <tr><td>Postal Code</td><td><input type="text" name="zip" /></td><td>{% if not user.is_authenticated %}Email{% endif %}</td><td>{% if not user.is_authenticated %}<input type="text" name="email" />{% endif %}</td></tr>
+        <tr><td>Photo</td><td colspan="2"><input type="file" name="photo_0" /><td><a href="#addphoto">Add another...</a></td></tr>
+      </table>
+    </div>
+<h3>2. Move the course session to the dates in the calendar</h3>
+<table><tr>
+<td>Start date: <input type="text" id="datepicker" name="starting_date" /></td>
+<td>Meeting time: 
+<select id="time_hour" name="time_hour">
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option selected="selected" value="7">7</option>
+<option value="8">8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+<option value="11">11</option>
+<option value="12">12</option>
+</select>
+:
+<select id="time_min" name="time_min">
+<option value="00">00</option>
+<option value="05">05</option>
+<option value="10">10</option>
+<option value="15">15</option>
+<option value="20">20</option>
+<option value="25">25</option>
+<option selected="selected" value="30">30</option>
+<option value="35">35</option>
+<option value="40">40</option>
+<option value="45">45</option>
+<option value="50">50</option>
+<option value="55">55</option>
+</select>
+<select id="time_ampm" name="time_ampm">
+<option value="am">am</option>
+<option selected="selected" value="pm">pm</option>
+</select></td></tr></table>
+  <ul id="days">
+    <li><a href="#sunday" class="unselected-day">Sunday</a><input type="checkbox" name="check_sunday" style="display:none;" /></li>
+    <li><a href="#monday" class="unselected-day">Monday</a> <input type="checkbox" name="check_monday" style="display:none;" /></li>
+    <li><a href="#tuesday" class="unselected-day">Tuesday</a><input type="checkbox" name="check_tuesday" style="display:none;" /></li>
+    <li><a href="#wednesday" class="unselected-day">Wednesday</a><input type="checkbox" name="check_wednesday" style="display:none;" /></li>
+    <li><a href="#thursday" class="unselected-day">Thursday</a><input type="checkbox" name="check_thursday" style="display:none;" /></li>
+    <li><a href="#friday" class="unselected-day">Friday</a><input type="checkbox" name="check_friday" style="display:none;" /></li>
+    <li><a href="#saturday" class="unselected-day">Saturday</a><input type="checkbox" name="check_saturday" style="display:none;" /></li>
+  </ul>
+<p><button id="fill-cal">Fill calendar</button>
+<div id="caldragger"><div id="calendar"></div></div>
+<div id="hiders" style="display:none;">
+  {% for session in sessions %}
+  <input type="hidden" id="h_{{ session.pk }}" name="c_{{ course.pk }}_s_{{ session.pk }}" value="c_{{course.pk }}-{{ session.session_number }}" class="hidden-out" />
+  {% endfor %}
+</div>
+<button name="save">Save</button>
+</form>
+</div>
+
+<div id="makeRight">
+  <h1><span class="highlight">Step 2: Set the place and dates</span></h1>
+  <p>To use the calendar tool you need:</p>
+  <ol class="menu">
+    <li>a starting date,</li>
+    <li>a daily meeting time,</li>
+    <li>the days of the week you want to meet.</li>
+  </ol>
+  <p>This course has {{ course.session.all|length }} sessions. </p>
+  <div class="course-list-container">
+    <div class="course-list-options"><button id="add_class" class="ui-button ui-state-default ui-corner-all">Add a meeting</button></div>
+    <div class="course-list"><ul id="c_{{ course.pk }}" class="session-holder"></ul></div>
+  </div>
+</div>
+
+
+{% endblock main %}
+
+{% block verybottom %}
+<div id="dialog_add_url" title="Create a new meeting">
+<p id="validationTips">Enter a video url</p>
+  <form>
+  <fieldset>
+    <label for="add_video">Video URL</label>
+    <input type="text" name="add_video" text="add_video" class="text ui-widget-content ui-corner-all"/>
+  </fieldset>
+  </form>
+</div>
+<div id="dialog_add" title="Create a new meeting">
+<p id="validationTips">Enter a video url</p>
+  <form>
+  <fieldset>
+    <label for="add_title">Title</label>
+    <input type="text" name="add_title" id="add_title" class="text ui-widget-content ui-corner-all" />
+    <label for="add_description">Description</label>
+    <textarea name="add_description" id="add_description" class="text ui-widget-content ui-corner-all"></textarea>
+    <label for="add_video">Video URL<span style="font:7px;">(optional)</span></label>
+    <input type="text" name="add_video" text="add_video" class="text ui-widget-content ui-corner-all"/>
+  </fieldset>
+  </form>
+</div>
+<div id="dialog_edit" title="Editing">
+<p id="validationTips">Enter a video url</p>
+  <form>
+  <fieldset>
+    <label for="add_title">Title</label>
+    <input type="text" name="add_title" id="add_title" class="text ui-widget-content ui-corner-all" />
+    <label for="add_description">Description</label>
+    <textarea name="add_description" id="add_description" class="text ui-widget-content ui-corner-all"></textarea>
+    <label for="add_video">Video URL<span style="font:7px;">(optional)</span></label>
+    <input type="text" name="add_video" text="add_video" class="text ui-widget-content ui-corner-all"/>
+  </fieldset>
+  </form>
+</div>
+<div id="dialog_view" title="Viewing">
+</div>
+{% endblock verybottom %}

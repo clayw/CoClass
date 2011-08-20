@@ -1,0 +1,33 @@
+<form>
+<fieldset>
+<table>
+</table>
+  <p id="validationTips"></p>
+    <div id="mf">
+      <p>
+      <label for="id_title">Title</label>
+      {{ form.title }}
+      </p>
+      <p>
+      <label for="id_description">Description</label>
+      </p>
+      <p>
+      {{ form.description }}
+      </p>
+      <p>
+      <label for="id_video_opt">Video URL</label>
+      {{ form.video_url }}
+      <button id="fetch">Fetch info</button>
+      </p>
+      <table id="mft">
+        {% for link in session.course_session.link.all %}
+        <tr id="{{ link.uuid }}" ><td>Link</td><td><a href="{{ link.url }}">{{ link.title }}</a></td><td><a href="#" onclick="remove_link('{{ link.uuid }}');" style="font-size:7pt;">remove</a></td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    <p>Time: <span id="new_time">{{ form.time }}</span><span id="change_time_clk">{% if session %}{{ session.date.time }}{% else %}{{ host_class.meeting_time }}{% endif %} (<a href="#change_time">change</a>)</span></p>
+    <p>Date: <span id="new_date">{{ form.date }}</span><span id="change_date_clk">{% if session %}{{ session.date|date:"d M Y" }}{% else %}{{ host_class.next_available_date|date:"d M Y" }}{% endif %} (<a href="#change_date">change</a>)</span></p>
+    {% comment %}<p>Add link: <a name="Assignment" href="#" class="add_item">assignment</a> <a name="Video" href="#" class="add_item">video</a> <a name="Reading" href="#" class="add_item">reading</a> <a name="Notes" href="#" class="add_item">lecture notes</a></p>{% endcomment %}
+    <p>Add <a name="Link" href="#" class="add_item">link</a></p>
+</fieldset>
+</form>

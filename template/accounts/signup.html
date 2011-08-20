@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}sign up{% endblock title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/signup.css" type="text/css" />
+<script type="text/javascript">
+  $(document).ready(function() {
+  });
+</script>
+{% endblock stylesheets %}
+
+{% block googleload_unsecure %}
+{% endblock googleload_unsecure %}
+
+{% block main %}  
+{% if user.is_authenticated %}
+<div><p>You are already signed in! <a href="/accounts/logout/">Logout</a></p></div>
+{% else %}
+  <div id="mainLeftSign">
+    <form action="" method="POST">
+      <table id="signupTable">
+        <tbody>
+          <tr>
+            <td><label for="id_first_name">First name:</label></td><td><input type="text" id="id_first_name" name="first_name"></td>
+          </tr>
+          <tr>
+            <td><label for="id_last_name">Last name:</label></td><td><input type="text" id="id_last_name" name="last_name"></td>
+          </tr>
+          <tr><td><label for="id_username">Username:</label></td><td><input type="text" id="id_username" name="username"></td></tr>
+          <tr><td><label for="id_email">Email:</label></td><td><input type="text" id="id_email" name="email"></td></tr>
+          <tr><td><label for="id_password">Password:</label></td><td><input type="password" id="id_password" name="password"></td></tr>
+        </tbody>
+      </table>
+	{{ html_captcha|safe }}
+      {% comment %}<input type="submit" value="Sign up" id="signupbutton" />{% endcomment %}
+      <input type="hidden" name="key" value="{{ key }}" />
+      <p><button id="signupbutton" >Sign up</button></p>
+    </form >
+   </div>
+  <div id="mainRightSign">
+    <h4>Or sign in with Facebook</h4>
+    <p><fb:login-button autologoutlink="true"></fb:login-button></p>
+
+    <div id="fb-root"></div>
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({appId: '116585341693336', status: true, cookie: true, xfbml: true});
+        FB.Event.subscribe('auth.sessionChange', function(response) {
+          // check coclass login
+          if (response.session) {
+            window.location = '/accounts/auth/facebook_login/done/'
+          } else {
+          }
+        });
+      };
+      (function() {
+        var e = document.createElement('script');
+        e.type = 'text/javascript';
+        e.src = document.location.protocol +
+          '//connect.facebook.net/en_US/all.js';
+        e.async = true;
+        document.getElementById('fb-root').appendChild(e);
+      }());
+    </script>
+  </div>
+  {% endif %}
+{% endblock main %}    

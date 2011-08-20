@@ -1,0 +1,35 @@
+{% extends "search/base.html" %}
+{% block stylesheets2 %}
+<script type="text/javascript">
+{% include "search/generic_search_javascript.js" %}
+</script>
+{% endblock stylesheets2 %}
+
+{% block searchform %}
+  <div class="searchbar-item" style="padding-left:10px;">
+    <input id="addr" type="text" name="addr" value="{{ addr }}" onfocus="clear_box(this)" onblur="move_box(this)" />
+  </div>
+  <div class="searchbar-item" style="padding-left:10px;">
+    <input id="what" type="text" name="what" value="{{ what }}" onfocus="clear_box(this)" onblur="move_box(this)" />
+  </div>
+  <div class="searchbar-item">
+    <button type="submit" id="imagebutton">
+      <img src="{{ MEDIA_URL }}img/searchbuttonA.png" alt="submit" />
+    </button>
+  </div>
+{% endblock searchform %}
+
+{% block searchname %}experts{% endblock searchname %}
+
+{% block searchlist %}
+  {% include "search/incl/expert_list.html" %}
+{% endblock searchlist %}
+
+{% block searchright %}
+<div id="right">
+<div id="searchmap">
+<div id="map_canvas" style="width: 100%; height: 300px;"></div>
+</div>
+</div>
+{% endblock searchright %}
+

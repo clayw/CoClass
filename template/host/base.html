@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div id="makeLeft">
+{% block left %}
+{% endblock left %}
+</div>
+
+<div id="makeRight">
+{% if class_creater %}
+  <h1>1. Make Class</h1>
+  {% block part1info %} {% endblock part1info %}
+  <h1>2. Set Place &amp; Dates</h1>
+  {% block part2info %} {% endblock part2info %}
+  <h1>3. Finalize Meetings</h1>
+  {% block part3info %} {% endblock part3info %}
+  <h1>4. Invite People</h1>
+  {% block part4info %} {% endblock part4info %}
+{% else %}
+  <h1><a href="{% url edit-host-class host_class.b36 %}">Edit Course Info</a></h1>
+  <h1><a href="{% url host-meetings host_class.36 %}">Change Calendar</a></h1>
+  <h1><a href="{% url host-invite host_class.36 %}">Invite People</a></h1>
+{% endif %}
+</div>
+{% endblock main %}
+

@@ -1,0 +1,28 @@
+{% extends "accounts/base.html" %}
+
+{% block ss %}
+<style>
+  table td { width: 110px; }
+</style>
+{% endblock ss %}
+
+{% block right %}
+<form method="post" action="">
+  {{ form.errors }}
+  <h3>Change Info</h3>
+  <table>
+    <tr><td>First name:</td><td>{{ form.first_name }}</td></tr>
+    <tr><td>Last name:</td><td>{{ form.last_name }}</td></tr>
+    <tr><td>Email:</td><td>{{ form.email }}</td></tr>
+  </table>
+
+  <h3>Change Password</h3>
+  <table>
+    <tr><td>Old password:</td><td>{{ form.old_password }}</td></tr>
+    <tr><td>New password:</td><td>{{ form.new_password }}</td></tr>
+    <tr><td>Confirm new password:</td><td>{{ form.confirm_new_password }}</td></tr>
+  </table>
+
+<button id="save" name="save">Save</button>
+</form>
+{% endblock right %}

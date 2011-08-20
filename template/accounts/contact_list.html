@@ -1,0 +1,9 @@
+{% extends "accounts/base.html" %}
+
+{% block right %}
+{% for contact in user.contact.all %}
+<table>
+  <tr><td><a href="{{ contact.to_contact.get_absolute_url }}">{{ contact.to_contact.get_full_name }}</a></td></tr>
+</table>
+{% endfor %}
+{% endblock right %}

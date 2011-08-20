@@ -1,0 +1,6 @@
+{% for result in results %}
+{{ result.rendered|safe }}
+{% comment %}
+<tr><td id="n"><div style="width:100%;"><a href="#{{ result.object.b36 }}" class="areq">{{ result.object.title }}</a><span style="font-size:7pt;">{% if result.object.instructors %} by {{ result.object.instructors }}{% endif %}</span></div><div style="font-size:7pt;">{% if result.object.from_date %}{{ result.object.from_date }}, {% endif %}{{ result.object.course_info_session.all|length }} sessions</div></td><td id="i">{% if result.object.institutions %}{{ result.object.institutions }}{% endif %}</td></tr>
+{% endcomment %}
+{% endfor %}

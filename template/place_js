@@ -1,0 +1,47 @@
+  $('.addphoto').click(function () {
+    $('#addrform').append('<tr><td></td><td colspan="2"><input type="file" name="photo_'+photo_ctr+'" /></td></tr>');
+    photo_ctr++;
+    return false;
+  });
+  $('select[name=place]').change(function () {
+    if ($(this).val() == '-1') {
+      var placeid = $('select[name=place]').val(),
+        url = '/place/edit/?place=' + placeid;
+      $.ajax({url: url, 
+        success: function (html) { 
+          $('#editform').css('display', '');
+          $('#editform').html(html);
+  $('.addphoto').click(function () {
+    $('#addrform').append('<tr><td></td><td colspan="2"><input type="file" name="photo_'+photo_ctr+'" /></td></tr>');
+    photo_ctr++;
+    return false;
+  });
+
+        }
+      });
+     
+      //$('#addressform').css('display', '');
+      //$('#editform').css('display','none');
+    } else if ($('#addressform').css('display') != 'none') {
+      //$('#addressform').css('display', 'none');
+    }
+  });
+  $('input[name=name]').keyup(function (e) {
+    $('select[name=place] :selected').html($('input[name=name]').val());
+  });
+  $('#edit').click(function () {
+    var placeid = $('select[name=place]').val(),
+      url = '/place/edit/?place=' + placeid;
+    $.ajax({url: url, 
+      success: function (html) { 
+        $('#editform').css('display', '');
+        $('#editform').html(html);
+  $('.addphoto').click(function () {
+    $('#addrform').append('<tr><td></td><td colspan="2"><input type="file" name="photo_'+photo_ctr+'" /></td></tr>');
+    photo_ctr++;
+    return false;
+  });
+
+      }
+    });
+  });

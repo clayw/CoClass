@@ -1,0 +1,8 @@
+  <tr class="result">
+    <td><a href="{{ object.get_absolute_url }}">{{ object.course.title }}</a> <br />{{ object.course.instructors }}{% if object.course.institution %}, {{ object.course.institution }}{% endif %}</td>
+    <td>{% with object.place.user as user %}{% include "user_pic_small_noname.html" %}{% endwith %}</td>
+    <td style="width:191px"><div class="ltr">{{ object.letter }}</div><div class="nltr">{{ object.place.name }}<br />{{ object.place.display_address }}</div><div id="clear"></div></td>
+    <td>{% if object.dates.all|length > 0 %}{{ object.first_session.date|date:"M d" }} - {{ object.last_session.date|date:"M d" }}{% else %}{{ object.disp_start_date|date:"M d" }}{% endif %}<br/>{{ object.render_days }}</td>
+    <td>{{ object.meeting_time|time }}</td>
+    <td><a href="/s/?hc={{ object.b36 }}">Find now</a></td>
+  </tr>

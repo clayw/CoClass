@@ -1,0 +1,28 @@
+{% extends "accounts/base.html" %}
+{% load i18n %}
+{% load time_tags %}
+{% load message_tags %}
+{% block right %}
+<div>
+<div style="float:left; width:500px;">
+  <table><tr><td>
+{% with message.sender as user %}
+  {% include "user_pic_small_noname.html" %}
+{% endwith %}
+</td>
+<td><h3><a href="{{ message.sender.get_absolute_url }}">{{ message.sender.get_full_name }}</a>: {{ message.subject }}</h3></td><tr><td></td><td>
+{{ message.body|linebreaksbr }}
+</td></tr></table>
+
+{% ifequal message.recipient user %}
+<a href="{% url messages_reply message.id %}">{% trans "Reply" %}</a>
+{% endifequal %}
+<a href="{% url django_messages.views.delete message.id %}">{% trans "Delete" %}</a>
+</div>
+<div style="float:right; width:200px;">
+  <h1>{{  message|request_from_message }}</h1>
+</div>
+<div id="clear"></div>
+</div>
+{% endblock right %}
+

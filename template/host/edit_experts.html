@@ -1,0 +1,17 @@
+{% extends "host/base_edit.html" %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/make.css" type="text/css" />
+{% endblock %}
+
+{% block left %}
+<form action="" method="post">
+  <table>
+    <tr><th></th><th>Is an expert?</th></tr>
+  {% for hm in members %}
+  <tr><td>{% with hm.user as user %}{% include "user_pic_small.html" %}{% endwith %}</td><td><input type="checkbox" {% if hm.expert %}checked{% endif %} name="{{ hm.user.username }}" /></td></tr>
+  {% endfor %}
+  </table>
+  <input type="submit" name="save" value="save" />
+</form>
+{% endblock left %}

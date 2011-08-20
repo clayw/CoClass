@@ -1,0 +1,9 @@
+<div id="cal"></div>
+<div id="hiders" style="display:none;">
+  {% for session in dates %}
+  {{ session.render_hidden_input }}
+  {% endfor %}
+</div>
+<script>
+  mkcal();
+</script>

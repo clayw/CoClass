@@ -1,0 +1,32 @@
+{% extends "search/base.html" %}
+{% block stylesheets2 %}
+<script type="text/javascript"></script>
+{% endblock stylesheets2 %}
+
+{% block searchform %}
+  <div class="searchbar-item" style="padding-left:10px;">
+    <input id="what" type="text" name="what" value="{{ what }}" onfocus="clear_box(this)" onblur="move_box(this)" />
+    <input type="hidden" name="addr" value="{{ addr }}" />
+  </div>
+  {% comment %}
+  <div style="height:50px;margin-left:10px; text-align:vertical;" class="searchbar-item">
+    <p>Video <input type="checkbox" /></p>
+  </div>
+  {% endcomment %}
+  <!-- <input type="text" name="what" value="{{ what }}" /> -->
+  <div class="searchbar-item">
+    <button type="submit" id="imagebutton">
+      <img src="{{ MEDIA_URL }}img/searchbuttonA.png" alt="submit" />
+    </button>
+  </div>
+{% endblock searchform %}
+
+{% block searchname %}classes{% endblock searchname %}
+
+{% block leftid %}fullleft{% endblock %}
+
+{% block searchlist %}
+  {% include "search/incl/class_list.html" %}
+{% endblock searchlist %}
+
+

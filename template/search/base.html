@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}CoClass.com: search results{% endblock title %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/search.css" type="text/css" />
+<script>
+var default_lookup = {'what':'What?', 'addr':'Where?', 'start_date': 'mm/dd/yyyy', };
+function clear_box (box) { if (box.value == default_lookup[box.name]) { box.value = ''; } } 
+function move_box (box) { if (box.value == '') { box.value = default_lookup[box.name]; } } 
+</script>
+{% block stylesheets2 %}{% endblock stylesheets2 %}
+{% endblock stylesheets %}
+
+{% block main %}
+<div style="position:absolute;">
+  <ul class="menu" id="search-tabs">
+    <li class="{% if not tab == 'meetings' %}un{% endif %}selected-tab"><a href="{{ tab_path }}&tab=meetings"><span class="pr"><span class="inner">Meetings</span></span></a></li>
+    <li class="{% if not tab == 'experts' %}un{% endif %}selected-tab"><a href="{{ tab_path }}&tab=experts"><span class="pr"><span class="inner">Experts</span></span></a></li>
+    <li class="{% if not tab == 'classes' %}un{% endif %}selected-tab"><a href="{{ tab_path }}&tab=classes"><span class="pr"><span class="inner">Classes</span></span></a></li>
+  </ul>
+</div>
+<div id="search_box" style="background-color:#efe; position:relative; top:-10px;">
+  <div id="search_box_inner" style="">
+    <form id="search_form" action="." method="get" > 
+      {% block searchform %}{% endblock searchform %}
+      <input type="hidden" name="tab" value="{{ tab }}" />
+      <input type="hidden" name="startdate" value="{{ startdate }}" />
+      <input type="hidden" name="n" value="{{ results_per_page }}" />
+      <div id="clear"></div>
+    </form>
+  </div>
+</div>
+{% if search_results %}
+<div id="{% block leftid %}left{% endblock leftid %}">
+{% block searchlist %}
+{% endblock searchlist %}
+</div>
+{% block searchright %}{% endblock searchright %}
+{% else %}
+  No listings in this area, please refine search.
+{% endif %}
+{% endblock main %}
+

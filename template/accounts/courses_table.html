@@ -1,0 +1,20 @@
+<table>
+  <tr>
+    <th id="course" style="width:150px;">COURSE</th> 
+    <th id="dates" style="width:100px;">DATES</th> 
+    <th id="time">TIME</th> 
+    <th id="progress">PROGRESS</td>
+    <th id="edit">EDIT</th> 
+  </tr>
+  {% for hm in host_members %}
+  <tr class="result">
+    <td>
+      <a href="{{ hm.host_class.get_absolute_url }}">{{ hm.host_class.course.title }}</a> <br />{{ hm.host_class.course.instructors }}{% if hm.host_class.course.institution %}, {{ hm.host_class.course.institution }}{% endif %}
+    </td>
+    <td>{{ hm.host_class.first_session.date|date:"M d" }} - {{ hm.host_class.last_session.date|date:"M d" }}<br/>{% if hm.host_class.monday %}M{% endif %}{% if hm.host_class.tuesday %}Tu{% endif %}{% if hm.host_class.wednesday %}W{% endif %}{% if hm.host_class.thursday %}Th{% endif %}{% if hm.host_class.friday %}F{% endif %}{% if hm.host_class.saturday %}Sa{% endif %}{% if hm.host_class.sunday %}Su{% endif %}</td>
+    <td>{{ hm.host_class.meeting_time|time }}</td>
+    <td>{{ hm.host_class.render_progress|floatformat:0 }}%</td>
+    <td><a href="{% url edit-host-class hm.host_class.b36 %}">edit</a></td>
+  </td>
+  {% endfor %}
+</table>

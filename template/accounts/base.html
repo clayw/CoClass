@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Account{% endblock title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/account.css" type="text/css" />
+{% block ss %} {% endblock ss %}
+{% endblock stylesheets %}
+
+{% block main %}
+<div id="accLeft">
+{% block left %}
+<div class="leftinner">
+{% include "user_pic_big.html" %}
+</div>
+<div class="leftinner">
+  <h1>Expert</h1>
+<ul class="menu">
+  <li><a href="/accounts/expert/">Manage Expert Settings</a></li>
+</ul>
+</div>
+<div class="leftinner">
+  <h1>Classes</h1>
+  <ul class="menu">
+  <li><a href="/accounts/classes">Enrolled Classes</a></li>
+  </ul>
+</div>
+<div class="leftinner">
+<h1>Account</h1>
+<ul class="menu">
+  <li><a href="/accounts/">Messages</a></li>
+  <li><a href="/accounts/contacts/">Contact List</a></li>
+  <li><a href="/accounts/place">Places</a></li>
+  <li><a href="/accounts/edit">Edit Profile</a></li>
+  <li><a href="/accounts/preferences">Edit Settings</a></li>
+</ul>
+</div>
+<div style="height:6px;"></div>
+{% endblock left %}
+</div>
+{% block right-outer %}
+<div id="accRight">
+{% block right %}
+{% endblock right %}
+</div>
+{% endblock right-outer %}
+{% endblock main %}

@@ -1,0 +1,5 @@
+  <tr class="result">
+    <td id="n"><div style="width:100%;"><a href="#{{ object.b36 }}" class="areq">{{ object.title }}</a><span style="font-size:7pt;">{% if object.instructors %} by {{ object.instructors }}{% endif %}</span></div><div style="font-size:7pt;">{% if object.from_date %}{{ object.from_date }}, {% endif %}{{ object.course_info_session.all|length }} sessions</div></td>
+    <td id="i">{% if object.institution %}{{ object.institution }}{% endif %}</td>
+    <td>{{ object.get_rating }}</td>
+  </tr>

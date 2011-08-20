@@ -1,0 +1,10 @@
+{{ course_form.errors }}
+<form method="post" action="">
+  {% if details %}
+  <p>{{ details }}</p>
+  {% endif %}
+<table>
+  {{ course_form.as_table }}
+</table>
+<button>Make</button>
+</form>

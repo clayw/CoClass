@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Take {{ host_class.course.title }}{% endblock title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}ui/css/south-street/jquery-ui-1.8.1.custom.css" type="text/css" />
+<style>
+  #message { height: 200px; width: 400px; }
+</style>
+<script type="text/javascript">
+</script>
+{% endblock stylesheets %}
+
+{% block left %}
+<form method="POST" action=".">
+  <h1>Sign up for {{ host_class.course.title }}</h1>
+  <p>Send a request to take this course. After you're accepted, you will be enrolled.</p>
+  <p>{{ form.body }}</p>
+  {% comment %}<p><textarea name="body" id="message">I would like to sign up for {{ host_class.course.title }}</textarea></p>{% endcomment %}
+  <p><button name="send">Send</button></p>
+</form>
+{% endblock left %}

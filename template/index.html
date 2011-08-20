@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block title %}study with your neighbors, take the best classes in the world{% endblock title %}
+
+{% block stylesheets %}
+<meta name="title" content="CoClass: study with your neighbors, take the best classes in the world" />
+<meta name="description" content="Want to increase your knowledge? Meet up with other smart people in your area to take online courses for free." />
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/index.css" type="text/css" />
+<script type="text/javascript" src="{{ MEDIA_URL }}pkg/jquery.cookie.js"></script>
+<script>
+var set_where = false, set_what = false;
+function clear_where (box) { if (!set_where) { clear_this(box); set_where=true; } } 
+function clear_what (box) { if (!set_what) { clear_this(box); set_what=true; } } 
+function clear_this(box) { box.value=''; }
+function set_welcome() { $.cookie("welcome", "1", { expires: 90 }); $('#welcome').hide();}
+$(function () {
+  //$('input[name=addr]').val('Where are you?');  
+  //$('input[name=what]').val('What will you study?');  
+  if ($.cookie("welcome") != '1') {
+    $('#welcome').html('<div style="position:fixed;padding:0;top:0;background-color:yellow; "><span style="font-size:10pt"><b>Welcome!</b> CoClass is a free tool to take online classes with people in your area. <a href="/about/">Learn more here.</a><span style=""> | <a href="#" onclick="set_welcome();">close this</span></span></div></div>');
+  }
+});
+</script>
+{% endblock stylesheets %}
+
+{% block search %}
+{% endblock search %}
+
+{% block main %}
+<div id="mainLeft">
+  <div style="background:#f1fff1; width:425px; margin-top:20px;">
+    <h1 style="padding:0;margin:0;text-align:center; font-size:18pt;">Featured Class</h1>
+    <div style="margin:10px 10px; background:white; padding:10px;">
+      <center>
+        <a href="{{ featured_class.get_absolute_url }}"><img src="{% thumbnail "p/801SwingA.jpg" 375x250 crop upscale %}" /></a>
+      </center>
+	<span style="font-size:6pt; margin:0 10px;">Photo from <a target="_blank" href="http://ocw.mit.edu">MIT OCW</a></span>
+    </div>
+    <div style="margin:10px 10px; background:white; padding:10px;">
+      <h3 style="padding:0;margin:0;"><a href="{{ featured_class.get_absolute_url }}">Physics I: Classical Mechanics</a> <span style="font-size:8pt;">from <a target="_blank" href="http://ocw.mit.edu">MIT</a></span></h3>
+    </div>
+    <div style="height:1px;"></div>
+  </div>
+</div>
+<div id="mainRight">
+  <div id="mainSearch">
+    <h1>Study with people near you.</h1>
+    <form id="searchForm" action="/s/" method="get" > 
+       <div class="rounded" id="addr">
+        <input type="text" name="addr" value="Where are you?" onfocus="clear_where(this)" />
+      </div> 
+      <div style="visibility:hidden;">
+      <span id="more" style="float:right;"><a href="#more">advanced search</a></span>
+        <div class="rounded" id="what">
+          <input type="text" name="what" value="" onfocus="clear_what(this);" />
+        </div> 
+      </div>
+      <div id="searchButton">
+        <button type="submit" id="imagebutton">
+          <img src="{{ MEDIA_URL }}img/searchbuttonA.png" alt="submit" />
+        </button>
+      </div>
+      </form>
+    </div>
+</div>
+{% endblock main %}
+

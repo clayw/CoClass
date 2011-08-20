@@ -1,0 +1,9 @@
+{% load thumbnail %}
+<tr><td>Name</td><td><input type="text" name="name" value="{% if place %}{{ place.name }}{% else %}New place...{% endif %}" /></td><td>Country</td><td><select name="country"><option>United States</option</select></td></tr>
+<tr><td>Address</td><td><input type="text" name="addr" value="{{ place.street }}" /></td><td>Apt/Unit/etc.</td><td><input type="text" name="apt" value="{{ place.apt }}" /></td></tr>
+<tr><td>City</td><td><input type="text" name="city" value="{{ place.city }}" /></td><td>State</td><td><input type="text" name="state" value="{{ place.state }}" /></td></tr>
+<tr><td>Postal Code</td><td><input type="text" name="zip" value="{{ place.zip }}" /></td><td>{% if not user.is_authenticated %}Email{% endif %}</td><td>{% if not user.is_authenticated %}<input type="text" name="email" />{% endif %}</td></tr>
+<tr><td>Photo</td><td colspan="2"><input type="file" name="photo_0" /><td><a class="addphoto" href="#addphoto">Add another...</a></td></tr>
+{% for pic in place.pic.all %}
+<tr><td><img src="{% thumbnail pic.pic 250x250 crop upscale %}" height="50" width="50" /></td><td><a href="/places/remove_pic/{{ pic.id }}/">remove</a></td></tr>
+{% endfor %}

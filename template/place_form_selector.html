@@ -1,0 +1,17 @@
+<div id="place-selector">
+    <select name="place" style="{% if not places %}display:none;{% endif %}width:200px;" >
+    {% if places %}
+      {% for place in places %}
+      <option value="{{ place.id }}">{{ place.name }}</option> 
+      {% endfor %}
+    {% endif %}
+      <option value="-1">New place...</option>
+    </select>{% if places %}<a id="edit" href="#edit">edit</a>{% endif %}
+</div>
+    <div id="editform">
+    {% if not places %}
+      <table id="addrform"> 
+        {% include "place_form.html" %}
+      </table>
+    {% endif %}
+    </div>

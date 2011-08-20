@@ -1,0 +1,21 @@
+{% extends "accounts/base-three.html" %} 
+{% load i18n %} 
+{% block innerleft %} 
+<h1>{% trans "Hire an expert"%}</h1>
+<form action="" method="post">
+<table>
+  <p>Dear {{ expert.user.first_name }},</p>
+  <p>{{ form.body }}<p>
+</table>
+  <p>Course:
+    <select name="host_class">
+      {% for host_class_member in host_class_members %}
+      <option value="{{ host_class_member.host_class.b36 }}">{{ host_class_member.host_class.course.title }}</option>
+      {% endfor %}
+    </select>
+  </p>
+<input type="submit" value="{% trans "Send" %} &raquo;"/>
+</form>
+{% endblock %}
+{% block innerright %}
+{% endblock %}

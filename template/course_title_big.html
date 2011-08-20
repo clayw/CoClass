@@ -1,0 +1,8 @@
+<h1>
+    <a href="{{ course.get_absolute_url }}">{{ course.title }}</a> 
+  {% if course.institution %}<span id="c_num">({{ course.course_number }} from {{ course.institution }})</span>{% endif %}
+  <span style="float:right;">
+    {% if hcm.editor %}<a href="{% url edit-host-class host_class.b36 %}">edit</a>{% endif %}
+  </span>
+</h1>
+

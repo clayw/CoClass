@@ -1,0 +1,22 @@
+{% load oembed_tags %}
+{% if session %}
+<span id="session-{{ cis.session_number }}"></span>
+<h4><span style="color:green">Session {{ cis.session_number }}:</span> {{ session.title }}</h4>
+<p>{{ session.description|linebreaksbr }}</p>
+<p>{% comment %}{% if session.video.embed %}{% include "video_embed.html" %}{% endif %}{%endcomment%}</p>
+<div id="video-container" style="color:white;">
+{% oembed %}
+  {{ session.url }}
+{% endoembed %}
+</div>
+{% with session.link.all as links %}
+  {% if links %}
+  <h5>Related links:</h5>
+  <ul>
+    {% for link in links %}
+    <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+{% endwith %}
+{% endif %}

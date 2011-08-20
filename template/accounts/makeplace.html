@@ -1,0 +1,54 @@
+{% extends "accounts/base.html" %}
+
+{% block stylesheets %}
+<script type="text/javascript">
+google.load("maps", "2");//",  {other_params:"sensor=false"});
+google.load("jqueryui", "1.8.1");
+var map;
+var geocoder;
+function initialize() {
+  geocoder = new GClientGeocoder();
+  map = new GMap2(document.getElementById("map_canvas"));
+}
+
+google.setOnLoadCallback(initialize);
+
+$(function() {
+  $("#checklock").click(function () {
+    $('#map_canvas').css('display', '');
+    var loc = $("input[name=addr]").val() + ' ' + $('input[name=city]').val() + ' ' + $('input[name=state]').val();
+    geocoder.getLatLng(
+      loc,
+      function(point) {
+        if (!point) {
+          // what
+        } else {
+          map.setCenter(point, 13);
+          var marker = new GMarker(point);
+          map.addOverlay(marker);
+        }
+      }
+    );
+    return false;
+  });
+  $('a[href*=addphoto]').click(function () {
+    $('#addrform').append('<tr><td>Photo</td><td colspan="2"><input type="file" name=photo-1" /></td></tr>');  
+    return false;
+  });
+});
+</script>
+{% endblock stylesheets %}
+{% block left %}
+<div id="map_canvas" style="display:none; width:600px; height: 200px;"></div>
+<form method="post" action=".">
+  <table id="addrform">
+    <tr><td>Name</td><td><input type="text" name="name" /></td><td>Country</td><td><select><option>United States</option</select></td></tr>
+    <tr><td>Address</td><td><input type="text" name="addr" /></td><td>Apt/Unit/etc.</td><td><input type="text" name="apt" /></td></tr>
+    <tr><td>City</td><td><input type="text" name="city" /></td><td>State</td><td><input type="text" name="state" /></td></tr>
+    <tr><td>Postal Code</td><td><input type="text" name="zip" /></td><td>Email</td><td><input type="text" name="email" /></td></tr>
+    <tr><td>Photo</td><td colspan="2"><input type="file" name="photo-0" /><td><a href="#addphoto">Add another...</a></td></tr>
+  </table>
+  <button id="checklock">Check location on map</button>
+  <button name="save" id="save">Save</button>
+</form>
+{% endblock left %}

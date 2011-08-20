@@ -1,0 +1,16 @@
+{% extends "accounts/base.html" %}
+{% block ss %}
+<script type="text/javascript">
+var photo_ctr = 0;
+$(function () { 
+  {% include "place_js" %}
+});
+</script>
+{% endblock ss %}
+
+{% block right %}
+<form method="POST" action="/place/edit/" enctype="multipart/form-data">
+{% include "place_form_selector.html" %}
+<input type="submit" value="Save" name="save" />
+</form>
+{% endblock right %}

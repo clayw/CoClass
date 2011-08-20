@@ -1,0 +1,33 @@
+{% extends "host/base.html" %}
+{% block title %}Hosting {{ course.title }}{% endblock title %}
+
+{% block stylesheets%}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/make.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}ui/css/south-street/jquery-ui-1.8.1.custom.css" type="text/css" />
+<script type="text/javascript">
+{% include "host_js" %}
+</script>
+<style type="text/css">
+</style>
+{% endblock stylesheets %}
+
+{% block left %}
+{% include "course_title_big.html" %}
+<form action="." method="POST" enctype="multipart/form-data">
+<h3>Where do you want to host it?</h3>
+{% include "place_form_selector.html" %}
+{{ session_form.errors }}
+<h3>When did you want to have classes?</h3>
+{% include "host/session_form.html" %}
+<h3>How much privacy do you want?</h3>
+{% include "host/priv_form.html" %}
+
+<button name="next" value="1" id="save" >Next</button>
+<button name="finish">Finish</button>
+</form>
+{% endblock left %}
+
+{% block part2info %}
+<p>This information will show up in search results.</p>
+{% endblock part2info %}
+

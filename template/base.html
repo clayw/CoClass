@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>CoClass: {% block title %}{% endblock title %}</title>
+{% block maincss %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}/sty/main.css" type="text/css" />
+{% endblock maincss %}
+<link rel="icon" type="image/png" href="{{ MEDIA_URL }}/img/favicon.png"/>
+<script type="text/javascript">
+var uservoiceOptions = {
+  /* required */
+  key: 'coclass',
+  host: 'coclass.uservoice.com', 
+  forum: '41193',
+  showTab: true,  
+  /* optional */
+  alignment: 'right',
+  background_color: 'green', 
+  text_color: 'white',
+  hover_color: '#efe',
+  lang: 'en'
+};
+
+function _loadUserVoice() {
+  var s = document.createElement('script');
+  s.setAttribute('type', 'text/javascript');
+  s.setAttribute('src', ("https:" == document.location.protocol ? "https://" : "http://") + "cdn.uservoice.com/javascripts/widgets/tab.js");
+  document.getElementsByTagName('head')[0].appendChild(s);
+}
+_loadSuper = window.onload;
+window.onload = (typeof window.onload != 'function') ? _loadUserVoice : function() { _loadSuper(); _loadUserVoice(); };
+</script>
+<script type="text/javascript" src="http{% if request.is_secure %}s{% endif %}://www.google.com/jsapi?key=ABQIAAAA4HDqD8t_GwFAvzzFapPlGRQ_R5Qiphk1phJft3u3QNxBad8fLRRA-q4ZSxjFfS9SK2wsDFMnz3jl7g"></script>
+<script type="text/javascript">
+    google.load('jquery', '1.4.2');
+</script>
+{% block stylesheets %}
+{% endblock stylesheets %}
+</head>
+
+<body>
+<div id="welcome"></div>
+<div id="container">
+  {% block header %}
+    <div id="header">
+        <div id="logo">
+            <a href="/"><img src="{{ MEDIA_URL }}/img/logosmall3.png" /></a>
+        </div>
+            <div id="hostAlign">
+                <ul id="nav-menu">
+                  <li class="bt"><a href="{% url host-search %}"><span>Host a class</span></a></li>
+                  <li><a href="{% url main-directory %}"><span>Class directory</span></a></li>
+                  <li><a href="/c/new/"><span>Create a class</span></a></li>
+                </ul>
+            </div>
+        <div id="SignerButton">
+            {% if user.is_authenticated %}
+            <p><span id="name">Welcome, <a href="/users/{{ user.username }}/">{{ user.first_name }}</a>!</span></p>
+            <p><a href="{% url messages_inbox %}">Account ({{ messages_inbox_count }})</a> | <a href="{% url logout %}">Sign Out</a></p>
+            {% else %}
+            <ul id="Signer">
+              <li> <a href="{% url login %}" id="SignInButton" title="Please Sign In">Sign In</a> | </li>
+              <li> <a href="{% url signup %}">Sign Up</a> </li>	
+            </ul>
+            {% endif %}
+        </div>
+    </div>	
+
+  {% endblock header %}
+
+<div id="main">
+  {% block mainTop %}
+  {% endblock mainTop %}
+  {% block main %}
+    <div id="left">
+    {% block left %}
+    {% endblock left %}
+    </div>
+	<div id="right">
+    {% block right %}
+    {% endblock right %}
+    </div>
+  {% endblock main %}
+	<div id="clear"> </div>		
+</div>	
+
+
+    {% block footer %}
+    <div id="footer">
+      <ul>
+        <li><a href="/about/">About</a> | </li>
+        {#<li><a href="/about/terms/">Terms</a> | </li>#}
+        <li><a href="http://coclass.posterous.com">Blog</a> | </li>
+        {#<li><a href="/about/help/">Help</a> | </li>#}
+        <li><a href="/about/contact/">Contact</a></li>
+      </ul>
+    </div>
+    {% endblock footer %}
+</div>
+{% block verybottom %}{% endblock verybottom %}
+<script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+  try {
+    var pageTracker = _gat._getTracker("UA-73993-3");
+    pageTracker._trackPageview();
+    } catch(err) {}</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<div style="background-color: white; margin:2px; position:relative; top: 2px; color:#696;">
+  {% include "course_title_big.html" %}
+<p>{{ course.description|linebreaksbr }}</p>
+<p>This course has {{ course.course_info_session.all|length }} sessions.<p>
+<form method="get" action="/h/create/{{ course.id }}">
+  <input type="submit" value="Host" />
+</form>
+{% comment %}<a href="/h/create/{{ course.id }}">Host {{ course.title }}</a>{% endcomment %}
+</div>

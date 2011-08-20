@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div id="makeLeft">
+{% block left %}
+{% endblock left %}
+</div>
+
+<div id="makeRight">
+  <h1><a href="{% url edit-host-class host_class.b36 %}">Edit Course Info</a></h1>
+  {% block part1info %}{% endblock part1info %}
+  <h1><a href="{% url host-meetings host_class.b36 %}">Change Calendar</a></h1>
+  {% block part2info %}{% endblock part2info %}
+  <h1><a href="{% url host-invite host_class.b36 %}">Invite People</a></h1>
+  {% block part4info %}{% endblock part4info %}
+  <h1><a href="{% url host-members host_class.b36 %}">Members</a></h1>
+</div>
+{% endblock main %}
+

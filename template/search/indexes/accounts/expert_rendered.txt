@@ -1,0 +1,6 @@
+  <tr class="result">
+    <td><div style="float:left; width:9px;">{{ object.letter }}</div> {% with object.user as user %}{% include "user_pic_small_noname.html" %}{% endwith %}</td>
+    <td class="text-left"><a href="{{ object.user.get_absolute_url }}">{{ object.user.get_full_name }}</a> {{ object.bio }}<br/>Skills: {{object.skills}} </td>
+    <td class="text-center">{{ object.price }}</td>
+    <td>0 Reviews{{ object.reviews }}</td>
+  </tr>

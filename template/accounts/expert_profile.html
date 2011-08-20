@@ -1,0 +1,17 @@
+{% extends "accounts/profile-three.html" %}
+
+{% block innerleft %}
+<h2>Bio:</h2>
+<p>{{ expert.bio }}</p>
+<h2>Skills:</h2>
+<p>{{ expert.skills }}</p>
+<h2></h2>
+{% if expert.linkedin_url %}
+<p><a target="_blank" href="{{ expert.linkedin_url }}">{{ profile.user.first_name }}</a> on LinkedIn</p>
+{% endif %}
+{% endblock %}
+{% block innerright %}
+  {% if expert.price %}<h1>${{ expert.price|floatformat:2 }} / hour</h1>{% endif %}
+  {% if expert.availability %}<p>Available: {{ expert.availability }}</p>{% endif %}
+  <h1><a href="{% url expert-hire expert.user.username %}">HIRE</a></h1>
+{% endblock innerright %}

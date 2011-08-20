@@ -1,0 +1,4 @@
+{% load thumbnail %}
+<div class="profile-box">
+  <a href="{{ user.get_absolute_url }}"><img src="{% thumbnail user.get_profile.user_pic 40x40 crop upscale %}" /></a>
+</div>

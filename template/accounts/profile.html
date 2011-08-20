@@ -1,0 +1,58 @@
+{% extends "accounts/base.html" %}
+
+{% block right %}
+<h2>Interests</h2>
+{% if profile_user.get_profile.interests %}
+{{ profile_user.get_profile.interests }}
+{% else %}
+<p>No interests.</p>
+{% endif %}
+
+<h2>Background</h2>
+{% if profile_user.get_profile.background %}
+{{ profile_user.get_profile.background }}
+{% else %}
+<p>No background information.</p>
+{% endif %}
+
+<h2>Courses</h2>
+{% if host_members %}
+{% include "accounts/courses_table.html" %}
+{% else %}
+<p>User has not signed up for any courses.</p>
+{% endif %}
+
+{% if profile_user.expert %}
+{% endif %}
+
+{% endblock right %}
+
+{% block left %}
+<div class="leftinner">
+{% with profile_user as user %}
+{% include "user_pic_big.html" %}
+{% endwith %}
+</div>
+{% if profile_user.get_expert and profile_user.get_expert.active %}
+<div class="leftinner">
+<h1>Expert</h1>
+<ul class="menu">
+  <li><a href="{% url expert-profile profile_user.username %}">Expert profile</a>
+</ul>
+</div>
+{% endif %}
+<div class="leftinner">
+{% if user == profile_user %}
+<h1>This is your profile</h1>
+{% else %}
+  <h1>Contact</h1>
+  <ul class="menu">
+    <li><a href="{% url send-message profile_user.username  %}">Send message</a></li>
+    {% if notacontact %}
+    <li><a href="{% url add-contact profile_user.username %}">Add to contact list</a></li>
+    {% endif %}
+  </ul>
+{% endif %}
+</div>
+<div style="height:6px;"></div>
+{% endblock left %}

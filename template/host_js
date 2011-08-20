@@ -1,0 +1,25 @@
+google.load("jqueryui", "1.8.1");
+var li_ctr = 0, photo_ctr = 1;
+$(function() {
+  $('#days a').click(function() {
+    var selector = $('input[name=check_'+$(this).attr('href').substring(1)+']');
+    if ($(this).hasClass('unselected-day')) {
+      $(this).removeClass('unselected-day');
+      $(this).addClass('selected-day');
+      selector.attr('checked', true);
+    } else { 
+      $(this).removeClass('selected-day');
+      $(this).addClass('unselected-day');
+      selector.attr('checked', false);
+    }
+    return false;
+  });
+  $('input[name^=check]').css('display', 'none');
+  var checkboxes = $('form :checkbox');
+  for (var i in checkboxes) {
+    if (checkboxes[i].checked) {
+      $('a[href=#' + checkboxes[i].name.substring(6)+']').click();
+    }
+  }
+  {% include "place_js" %}
+});

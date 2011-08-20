@@ -1,0 +1,14 @@
+<table><tr>
+    <td>Start date:</td><td>{{ session_form.starting_date }}</td></tr>
+  <tr><td>Meeting time:</td><td>{{ session_form.time }}</td></tr>
+  <tr><td>Select days:<br/><span style="font-size:7pt;">Pick at least one</span></td>
+  <td><ul id="days">
+    <li><a href="#sunday" class="unselected-day">Sunday</a>{{ session_form.check_sunday }}</li>
+    <li><a href="#monday" class="unselected-day">Monday</a>{{ session_form.check_monday }}</li>
+    <li><a href="#tuesday" class="unselected-day">Tuesday</a>{{ session_form.check_tuesday }}</li>
+    <li><a href="#wednesday" class="unselected-day">Wednesday</a>{{ session_form.check_wednesday }}</li>
+    <li><a href="#thursday" class="unselected-day">Thursday</a>{{ session_form.check_thursday }}</li>
+    <li><a href="#friday" class="unselected-day">Friday</a>{{ session_form.check_friday }}</li>
+    <li><a href="#saturday" class="unselected-day">Saturday</a>{{ session_form.check_saturday }}</li>
+</ul></td></tr>
+</table>

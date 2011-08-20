@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% load time_tags %}
+{% load thumbnail %}
+{% block title %}{{ course.title }}{% endblock title %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/hosting.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}ui/css/south-street/jquery-ui-1.8.1.custom.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/calendar.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}pkg/galleryview/galleryview.css" />
+<script type="text/javascript" src="{{ MEDIA_URL }}js/calendar.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}pkg/galleryview/jquery.timers-1.1.2.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}pkg/jquery.easing.1.3.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}pkg/galleryview/jquery.galleryview-2.0.js"></script>
+<script>
+google.load("jqueryui", "1.8.1");
+google.load("maps", "2"); 
+
+var currTab = '#course';
+function initialize_pics() {
+  var map = new GMap2(document.getElementById("map_canvas"));
+  map.addControl(new GSmallMapControl()); 
+  var point = new GLatLng({{ host_class.place.latitude }}, {{ host_class.place.longitude }});
+  map.setCenter(point, 13);
+  var marker = new GMarker(point, {});
+  map.addOverlay(marker);
+}
+function ses_setter() {
+  $('#current-session').val($('#session-id').val());
+  $('.ses_ajax').click(function() { 
+    var newTab = '#sessions', url;
+    if (this.name) {
+      url='/h/s/{{ host_class.b36 }}/?p=' + this.name;
+    } else {
+      url = '/h/s/{{ host_class.b36 }}/' + $('#current-session').val();
+      //console.log(url);
+    }
+    $(currTab).hide(); $(newTab).show();
+    generic_ajax(url, newTab, ses_setter);
+    currTab = newTab;
+    return false;
+  });
+}
+
+function generic_ajax(url, newTab, success_func) {
+  $(newTab).html('<img src="{{ MEDIA_URL}}img/ajax-loader.gif" />');
+  //console.log('generic ajax: ' + url);
+  $.ajax({url: url, 
+    success: function (html) { 
+      $(newTab).html(html); 
+      success_func();
+    }
+  });
+}
+function mkcal() { currdate = new Date(); 
+  init_calendar('cal', false, function() {  
+      var session_number = $(this).parent().parent().attr('id');
+      //console.log(session_number);
+      $('#current-session').val(session_number);
+      change_screen('#sessions');
+//      $('a[href=#sessions').click();
+      return false;
+    });
+}
+function change_screen(newTab) {
+  $(currTab).hide(); $(newTab).show();
+  if (newTab == '#sessions') {
+    var url = '/h/s/{{ host_class.b36 }}/' + $('#current-session').val();
+    generic_ajax(url, newTab, ses_setter);
+  } else if (newTab == '#calendar') {
+    generic_ajax('/h/c/{{ host_class.b36 }}/', newTab, mkcal);
+  } else if (newTab == '#place') {
+    initialize_pics();
+    $('.loader').hide();
+  }
+  var cid = $(currTab).attr('id'); 
+  var nid = $(newTab).attr('id'); 
+  $('.s_' + cid).attr('id', 'tabDrop');
+  $('.s_' + nid).attr('id', 'tabDropSel');
+  currTab = newTab;
+}
+  $(document).ready(function() {
+    $('#sessions').hide();
+    $('#place').hide();
+    $('#calendar').hide();
+    $('.s_course').attr('id', 'tabDropSel');
+    ses_setter();
+    $('#tabs_menu a, a[href=#place]').click(function () {
+      var newTab = $(this).attr('href');
+      change_screen(newTab);
+      return false;
+    });
+    $('#photo_list').galleryView({
+      panel_width: 330,
+      panel_height: 400,
+      frame_width: 50,
+      frame_height: 50,
+    });
+  });
+</script>
+{% endblock stylesheets %}
+{% block main %}
+<div class="backdrop">
+  <input type="hidden" id="current-session" name="current-session" value="{{ host_class.next_session.uuid }}" />
+  <div style="background-color: white; margin:2px; position:relative; top: 2px;">
+    {% include "course_title_big.html" %}
+  </div>
+<div id="topleft">
+<div id="tabBox">
+<div id="spRight" class="sp" style="margin-left: 20px;">
+<div id="tabs">
+<div id="course">
+  <h3>Class Details</h3>
+  <table>
+    {% if host_class.next_session %}
+    <tr><td class="label">Next class</td><td><a href="#" name="{{ host_class.next_session.session_number }}" class="ses_ajax">Session {{ host_class.next_session.session_number }}</a> on {{ host_class.next_session.date|date:"m/d/Y" }} </td></tr>
+    {% else %}
+    {% endif %}
+    {% if host_class.next_session %}
+    <tr><td class="label">Final class</td><td><a href="#" name="{{ host_class.last_session.session_number }}" class="ses_ajax">Session {{ host_class.last_session.session_number }}</a> on {{ host_class.last_session.date|date:"m/d/Y" }}</td></tr>
+    {% endif %}
+    <tr><td class="label">Meeting time</td><td>{{ host_class.meeting_time|time }} {{ host_class.render_days_all }}
+    </td></tr>
+    <tr><td class="label">Place</td><td>{{ host_class.place.name }}</td></tr>
+    <tr><td class="label">Address</td><td>{{ host_class.place.get_full_address }} (<a href="#place">map</a>)</td></tr>
+  </table>
+  <h3>Description</h3> 
+  <p>{{ course.description|linebreaksbr }}</p> 
+</div>
+<div id="place">{% include "host/ajax_place.html" %}</div>
+<div id="sessions"> </div>
+<div id="calendar"> </div>
+</div>
+</div>
+<div id="spBottom" style="clear: both; float:bottom; height:20px;"></div>
+</div>
+</div>
+<div id="topright">
+<div id="rBox">
+<div id="hMenu">
+<ul id="tabs_menu">
+  <li><div id="tabDrop" class="s_course"><div id="inner"><a href="#course">Course</a></div></div></li>
+  <li><div id="tabDrop" class="s_sessions"><div id="inner"><a href="#sessions">Sessions</a></div></div></li>
+  <li><div id="tabDrop" class="s_place"><div id="inner"><a href="#place">Map&amp;Pics</a></div></div></li>
+  <li><div id="tabDrop" class="s_calendar"><div id="inner"><a href="#calendar">Calendar</a></div></div></li>
+</ul>
+</div>
+<div id="signupCourse" style="width:90%; margin-left:10px; position:relative; ">
+  {% comment %} if signed up ... {% endcomment %}  
+    {% if hcm %} {% if not hcm_expert %}
+    <h2><a href="/s/?tab=experts&hc={{ host_class.b36 }}">Find an expert</a></h2>
+    {% endif %}
+    {% else %}
+    <h2><a href="{% url host-signup host_class.b36 %}">Sign me up!</a></h2>
+    {% endif %}
+</div>
+  {% if hcm_expert %}
+  <div style="background:#f1fff1; padding-bottom:6px; margin:15px; ">
+    <h1>Expert</h1>
+    <div style="padding:5px;">
+    {% for expert in hcm_expert %}
+      {% with expert.user as user %}
+        {% include "user_pic_small.html" %}
+      {% endwith %}
+    {% endfor %}
+    </div>
+    <div id="clear"></div>
+  </div>
+  {% endif %}
+</div>
+</div>
+<div id="bottomleft">
+<div id="textEntry" style="background:#f1fff1;">
+{% if hcm %}
+  <form id="entryField" action="." method="POST"> 
+  <div id="cBox"><textarea  name="comment" id="commentBox"></textarea></div>
+  <div id="postButton"><input type="submit" value="post" id="commentpost" /></div>
+  </form>
+{% else %}
+<div style="padding:15px 20px; font-size:8pt;"><p>You must be signed up for the class to comment.</p></div>
+{% endif %}
+</div>
+<div id="commentContainer">
+<table id="comments">
+{% for comment in comments %}
+<tr class="comment">
+  <td class="bigBox"> 
+    <table><tr>
+        <td class="userCell"><a href="{{ comment.host_member.user.get_absolute_url }}"><img src="{% thumbnail comment.host_member.user.get_profile.user_pic 50x50 crop upscale %}" /></a></td>
+      <td class="commentCell">
+        <div class="commentBase">
+          <span class="commentInfo"><a href="{{ comment.host_member.user.get_absolute_url }}">{{ comment.host_member.user.get_full_name }}</a> posted {{ comment.time|date_diff }}</span> <span class="rep">{% if user == comment.host_member.user or hcm.admin %}<a href="/h/comment/delete/{{ comment.pk }}/">delete</a>{% else %}<a href="report">report</a>{% endif %}</div>
+        <div class="commentText">{{ comment.comment }}</div>
+      </td></tr>
+    </table></td>
+</div> </td> </tr>
+{% endfor %}
+</table>
+</div>
+</div>
+<div id="bottomright">
+<div id="classmate-box">
+<h3 style="border-top: none;">Classmates</h3>
+<div id="classmate-inner">
+{% for member in members %}
+<div class="classmate">
+{% with member.user as user %}
+  {% include "user_pic_small.html" %}
+{% endwith %}
+</div>
+{% endfor %}
+</div>
+</div>
+</div>
+<div id="clear"></div>
+</div>
+</div>
+{% endblock main %}

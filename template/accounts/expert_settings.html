@@ -1,0 +1,45 @@
+{% extends "accounts/base.html" %}
+
+{% block right %}
+{% if expert %}
+<form method="POST" action=".">
+{{ form.errors }}
+  <table class="acc-table">
+    <tr>
+      <td class="label">Short biography:</td>
+      <td>{{ form.bio }}</td>
+    </tr>
+    <tr>
+      <td class="label">General skills:</td>
+      <td>{{ form.skills }}</td>
+    </tr>
+    <tr>
+      <td class="label">Availability:</td>
+      <td>{{ form.availability }}</td>
+    </tr>
+    <tr>
+      <td class="label">Listed price:</td>
+      <td>{{ form.price }}</td>
+    </tr>
+    <tr>
+      <td class="label">LinkedIn URL:</td>
+      <td>{{ form.linkedin_url }}</td>
+    </tr>
+    <tr>
+      <td class="label">Activate:</td>
+      <td><input type="checkbox" {% if expert.active %}checked{% endif %} name="active" /></td>
+  </table>
+<h3>Where are you?</h3>
+{% include "place_form_selector.html" %}
+  <p><button>Save</button></p>
+</form>
+{% else %}
+<p>Activate your expert account: You can list your skills in the public directory where you may recieve requests from other users to help with courses.</P>
+{#<p><textarea id="terms">Lorem ipsum dolar</textarea></p>#}
+<form action="/accounts/expert-agreement/" method="post">
+<p><button id="agree" name="agree">Activate</a></p>
+</form>
+
+{% endif %}
+{% endblock right %}
+

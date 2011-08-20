@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}{% if creating %}Create a class{% else %}Editing {{ course.title }} {% endif %}{% endblock title %}
+{% block stylesheets %}
+<style>
+th {
+  width: 100px;
+  font-size:8pt;
+  text-align:left;
+  vertical-align:top;
+}
+#id_title {
+  font-size:15pt;
+}
+#id_description, #id_url, #id_title, #id_prerequisites {
+  width: 400px; 
+}
+#id_description {
+  height: 250px;
+}
+#id_prerequisites {
+  height: 50px;
+}
+</style>
+<script type="text/javascript">
+var ctr = 0;
+var default_lookup = {'title':'Title', 'url':'URL http://www...', }; 
+function clear_box (box) { if (box.value == default_lookup[box.id]) { box.value = ''; } } 
+function move_box (box) { if (box.value == '') { box.value = default_lookup[box.id]; } } 
+function remove_link (uuid) {
+  $('#' + uuid).hide(); 
+  $('#mft').after('<input type="hidden" name="del_link' + (ctr++) + '" value="'+uuid+'" />');
+  return false;
+}
+function remove_link_input(id) {
+  $('#'+id).remove();
+  return false;
+}
+$().ready(function () {
+  $('.add_item').click(function () {
+    $('#mft').append('<tr id="r_'+ctr+'"><td>'+this.name + '</td><td><input type="text" name="add_'+this.name+'_'+ctr+'" id="url" onfocus="clear_box(this);" onblur="move_box(this);" value="URL http://www..." size="14"/></td><td ><input size="14" type="text" name="title_'+this.name+'_'+ctr+'" id="title" value="Title" onfocus="clear_box(this);" onblur="move_box(this);" /></td><td><a href="#" style="font-size:7pt" onclick="remove_link_input(\'r_'+ctr+'\');" >remove</a></td></tr>');
+    ctr++;
+    return false;
+  });
+  
+});
+</script>
+{% endblock stylesheets %}
+
+{% block left %}
+{# todo make this page a base for add_contacts, edit, etc #}
+{% if add_editoring %}
+<p>Pick contacts to be a course editors. Make new contacts by clicking "add to contacts" on a user profile.</p>
+{% if contacts %}
+    <table>
+      {% for contact in contacts %}
+      <tr><td>{{ contact.to_contact.get_full_name }}:</td><td><a href="/c/add_editor/{{ course.b36 }}/{{ contact.to_contact.username }}/">make editor</a></td></tr>
+      {% endfor %}
+    </table>
+{% else %}
+{% endif %}
+
+{% else %}
+{{ form.errors }}
+<form action="" method="post">
+<table>
+{{ form.as_table }}
+{% if session_aux_form %}
+{{ session_aux_form.as_table }}
+{% endif %}
+</table>
+{% if session %}
+<table id="mft">
+{% for link in session.link.all %}
+<tr id="{{ link.uuid }}" ><td>Link</td><td><a href="{{ link.url }}">{{ link.title }}</a></td><td><a href="#" onclick="remove_link('{{ link.uuid }}');" style="font-size:7pt;">remove</a></td></tr>
+{% endfor %}
+</table>
+<p>Add <a name="Link" href="#" class="add_item">link</a></p>
+{% endif %}
+<input type="submit" name="save" value="Save" />
+</form>
+{% endif %}
+{% endblock left %}
+
+{% block right %}
+<div style="background-color:#efe; padding: 1px 0 6px;">
+{% if not creating %}
+  <div class="leftinner">
+    <h1>{% if session %}<a href="/c/edit/{{ course.b36 }}/">Edit class details</a>{% else %}Editing {{ course.title }}{% endif %}</h1>
+  </div>
+  <div class="leftinner">
+    <h1><a href="/c/v/{{ course.b36 }}/">View class page</a></h1>
+  </div>
+  <div class="leftinner">
+    <form action="/c/new_session/{{ course.b36 }}/" method="get"><h1>Edit sessions <button style="float:right;">Add</button></h1></form>
+<ol>
+  {% for session in course.course_info_session.all %}
+  <li><a href="{% url edit-session course.b36 session.pk %}#session-{{ session.session_number }}">{{ session.session.title }}</a></li>
+  {% endfor %}
+</ol>
+  </div>
+<div class="leftinner">
+  <form action="/c/add_editor/{{ course.b36 }}" method="get"><h1>Editors <button style="float:right;">Add</button></h1></form>
+  <ul>
+    {% for editor in editors %}
+    <li><a href="{{ editor.get_absolute_url }}">{{ editor.get_full_name }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% else %}
+  <div class="leftinner">
+    <h1>Create a class</h1>
+    <p>Enter a title and description to create a class.  Course prerequisites and a link to the course webpage are optional.</p>
+    <p>After this, you can create and move lecture sessions.</p>
+  </div>
+{% endif %}
+</div>
+{% endblock right %}

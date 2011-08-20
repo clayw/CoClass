@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}about{% endblock title %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/about.css" type="text/css" />
+{% endblock stylesheets %}
+	
+{% block right %}
+<ul>
+  <li>{% block about %}<a href="/about/">About</a>{% endblock about %}</li>
+  {#<li>{% block video %}<a href="/about/video/">Video</a>{% endblock video %}</li>#}
+  {#<li>{% block testimonials %}<a href="/about/testimonials/">Testimonials</a>{% endblock testimonials %}</li%>#}
+  {#<li>{% block terms %}<a href="/about/terms/">Terms</a>{% endblock terms %}</li>#}
+  {#  <li>{% block help %}<a href="/about/help/">Help</a>{% endblock help %}</li>#}
+  <li>{% block blog %}<a href="http://coclass.posterous.com/">Blog</a>{% endblock blog %}</li>
+  {#<li>{% block team %}<a href="/about/team/">Team</a>{% endblock team %}</li>#}
+  <li>{% block contact %}<a href="/about/contact/">Contact</a>{% endblock contact %}</li>
+</ul>
+{% endblock right %}

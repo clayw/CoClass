@@ -1,0 +1,22 @@
+{% load oembed_tags %}
+<input type="hidden" id="session-id" name="session-id" value="{{ session.b36 }}" />
+<h2>{% if results.has_previous %}<a id="ses_prev" class="ses_ajax" href="/h/s/{{ host_class.b36 }}/?p={{ results.previous_page_number }}" name="{{ results.previous_page_number }}"><img src="{{ MEDIA_URL }}img/arrow_l.jpg" /></a>{% endif %} Session {{ results.start_index }} {% if results.has_next %}<a id="ses_next"  href="/h/s/{{ host_class.b36 }}/?p={{ results.next_page_number }}" class="ses_ajax" name="{{ results.next_page_number }}"><img src="{{ MEDIA_URL }}img/arrow_r.jpg" /></a>{% endif %}</h2>
+<div>
+  <div style="float:left; color:white; width:425px;">
+  {% oembed %} {{ session.course_session.url }} {% endoembed %}
+  </div>
+  <div style="float:right; width:300px";>
+  <h4>{{ session.course_session.title }} <span style="font-size:8px;">{{ session.date|date:"f a, m/d/Y" }}</span></h4>
+  {{ session.course_session.description|linebreaksbr }}
+
+  {% if session.link.all %}
+  <p>Additional resources:</p>
+  <ul class="menu">
+    {% for link in session.link.all %}  
+    <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  </div>
+  <div id="clear"></div>
+</div>

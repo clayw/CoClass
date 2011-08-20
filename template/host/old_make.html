@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Host a class{% endblock title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/make.css" type="text/css" />
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#searchres').hide();
+  $("#flash").hide();
+  $("#resList").hide();
+  $("#searchbutton").click(function() {
+    course_query = $('#coursebox').val();
+    if (course_query != '') {
+      $.ajax({
+        type: "GET",
+        url: "/s/d/",
+        data: 'q=' + course_query,
+        cache: false,
+        beforeSend: function(html) {
+          document.getElementById("resList").innerHTML = '';
+          $("#flash").show();
+          $("#searchres").show();
+          $("#spquery").html(course_query);
+        },
+        success: function(html) {
+          $("#resList").show();
+          $("#resList").append(html);
+          $("#flash").hide();
+          $('.areq').click(function() {
+            var reqid = $(this).attr('href').split('#')[1];
+            $.ajax({
+              type: "GET",
+              url: "/c/i/",
+              data: 'q=' + reqid,
+              beforeSend: function(html) {
+                document.getElementById("info-filler").innerHTML= '';   
+              },
+              success: function(html) {
+                $("#info-filler").append(html);
+              },
+            });
+            return false;
+          });
+        }
+      });
+    }
+    return false;
+  });
+});
+</script>
+{% endblock stylesheets %}
+
+{% block main %}
+<div id="makeLeft">
+  <form method="cd" action="get">
+    <p><input type="text" name="coursebox" id="coursebox" /> <button id="searchbutton" >search</button> or <b><a href="{% url host-create-none %}" style="font-size:13pt;">Make Course</a></b></p>
+  </form>
+<div id="searchres">Search results for <span id="spquery"></span></div>
+<div id="flash">Loading results... <img src="{{ MEDIA_URL }}img/ajax-loader.gif" /> </div>
+<div id="choices"><table id="resList"></table></div>
+</div>
+
+{% block makeRightBlock %}
+<div id="makeRight">
+  <h1><span class="highlight">Pick the course</span></h1>
+  <p><span class="highlight">Search</span> to for the course you want to host.</p>
+  <p><span class="highlight">Pick</span> the course you want to host from the list.</p>
+  <p><span class="highlight">Click</span> <b><a href="{% url host-create-none %}">Make Course</a></b> to use your own material.</p>
+  <div id="info-filler"></div>
+
+</div>
+{% endblock makeRightBlock %}
+
+{% endblock main %}

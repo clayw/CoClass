@@ -1,0 +1,14 @@
+{% extends "accounts/base.html" %} 
+{% load i18n %} 
+{% block right %} 
+<h1>{% trans "Compose Message"%}</h1>
+<form action="" method="post">
+<table>
+<tr><td>To:</td><td>{{ form.recipient }}</td></tr>
+<tr><td>Subject:</td><td>{{ form.subject }}</td></tr>
+<tr><td>Body:</td><td>{{ form.body }}</td></tr>
+</table>
+<input type="submit" value="{% trans "Send" %} &raquo;"/>
+</form>
+
+{% endblock %}

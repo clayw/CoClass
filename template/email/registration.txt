@@ -1,0 +1,6 @@
+Dear {{ user.first_name }},
+
+Welcome to CoClass. 
+
+Regards,
+Clay Woolam

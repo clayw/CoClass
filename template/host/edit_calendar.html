@@ -1,0 +1,191 @@
+{% extends ext_template %}
+{% block title %}Meetings{% endblock title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/make.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/calendar.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}ui/css/south-street/jquery-ui-1.8.1.custom.css" type="text/css" />
+<script type="text/javascript" src="{{ MEDIA_URL }}js/calendar.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}pkg/jquery.form.js"></script>
+<script type="text/javascript">
+google.load("jqueryui", "1.8.1");
+</script>
+<script type="text/javascript">
+var default_lookup = {'title':'Title', 'url':'URL http://www...', }; 
+function clear_box (box) { if (box.value == default_lookup[box.id]) { box.value = ''; } } 
+function move_box (box) { if (box.value == '') { box.value = default_lookup[box.id]; } } 
+var start_date, general_time, placer_date;
+function remove_link (uuid) {
+  $('#' + uuid).hide(); 
+  $('#mft').after('<input type="hidden" name="del_link" value="'+uuid+'" />');
+  return false;
+}
+function remove_link_input(id) {
+  $('#'+id).remove();
+  return false;
+}
+function change_x(x) {
+  $('a[href=#change_'+x+']').click(function () { 
+    $('#change_'+x+'_clk').hide();
+    $('#new_'+x).show();
+    return false;
+  });
+}
+function init_dialog(session_number) { 
+  var p_url = '{{ host_class.b36 }}/', button_name, delete_old,
+    buttons = {
+        Submit: function() {
+          var bValid = true;
+          var diag_this = this; 
+          $.ajax({url: '/h/se_post/'+p_url, 
+            data: $('#dialog_ajax form').formSerialize(),
+            success: function (html) { 
+              delete_old();
+              $('#hiders').append(html);
+              make_all_lis();
+              $(diag_this).dialog('close');
+            }
+          });
+        },
+        Close: function() {
+          $(this).dialog('close');
+        }, };
+  if (session_number) { 
+    p_url += session_number + '/';
+    delete_old = function () {$('#h_' + session_number).remove();}
+    buttons['Delete'] = function () { var diag_this = this; $.ajax({url: '/h/se_del/'+p_url, success: function(html) { $('#h_'+session_number).remove(); make_all_lis(); $(diag_this).dialog('close'); }});  };
+    buttons['Move To Next Day'] = function () { var diag_this = this; $.ajax({url: '/h/se_propagate/'+p_url, success: function(html) { window.location.reload(); } });  };
+  } else {
+    delete_old = function () {}
+  }
+  $.ajax({url: '/h/se/'+p_url,
+    success: function (html) { 
+    $('#dialog_ajax').dialog('option','buttons', buttons);
+      $('#dialog_ajax').html(html); 
+      $('#dialog_ajax').dialog('open'); 
+      $('#new_date, #new_time').hide();
+      jQuery.map(['time', 'date'], change_x)
+      var ctr = 0;
+      $('#fetch').click(function (e) {
+        // ask y/n
+        $.getJSON('/c/vi?q=' + encodeURIComponent($('#id_video_url').val()), 
+          function(data) {
+            $('#id_title').val(data.title);
+            $('#id_description').val(data.description);
+          }
+        );
+        return false;
+      });
+      $('.add_item').click(function () {
+        $('#mft').append('<tr id="r_'+ctr+'"><td>'+this.name + '</td><td><input type="text" name="add_'+this.name+'_'+ctr+'" id="url" onfocus="clear_box(this);" onblur="move_box(this);" value="URL http://www..." size="14"/></td><td ><input size="14" type="text" name="title_'+this.name+'_'+ctr+'" id="title" value="Title" onfocus="clear_box(this);" onblur="move_box(this);" /></td><td><a href="#" style="font-size:7pt" onclick="remove_link_input(\'r_'+ctr+'\');" >remove</a></td></tr>');
+        ctr++;
+        return false;
+      });
+    }
+  });
+}
+$().ready(function() {
+    currdate = new Date();
+    console.log('init');
+    init_calendar('calendar', true, function(e) {
+      var session_number = $(this).parent().parent().attr('id');
+      console.log(session_number);
+      init_dialog(session_number);
+      return false;
+    });
+    
+    function updateTips(t) {
+      tips.text(t).effect("highlight",{},1500);
+    }
+    $("#dialog_ajax").dialog({
+      autoOpen: false,
+      minWidth: 600,
+      modal: true,
+      close: function() {
+      }
+    });
+    $('#add_class').click(function (e) {
+        init_dialog(false);
+    }).hover(
+        function(){ $(this).addClass("ui-state-hover"); },
+        function(){ $(this).removeClass("ui-state-hover"); 
+    });
+    $('button').mousedown(function(){
+      $(this).addClass("ui-state-active"); 
+    }).mouseup(function(){
+        $(this).removeClass("ui-state-active");
+    });
+
+    $('#days a').click(function() {
+      var selector = $('input[name=check_'+$(this).attr('href').substring(1)+']');
+      if ($(this).hasClass('unselected-day')) {
+        $(this).removeClass('unselected-day');
+        $(this).addClass('selected-day');
+        selector.attr('checked', true);
+      } else { 
+        $(this).removeClass('selected-day');
+        $(this).addClass('unselected-day');
+        selector.attr('checked', false);
+      }
+      return false;
+    });
+
+});
+</script>
+{% endblock stylesheets %}
+
+{% block left %}
+{% comment %}
+<p>Calendar will be filled according to </p>
+<p><button id="fill-cal">Fill calendar</button>
+<div class="course-list-container">
+  <div class="course-list-options"><button id="add_class" class="ui-button ui-state-default ui-corner-all">add a meeting</button></div>
+  <div class="course-list"><ul id="c_{{ course.b36 }}" class="session-holder"></ul></div>
+<div id="clear"></div>
+</div>
+{% endcomment %}
+<div id="caldragger">
+  <div id="calendar" style="width:575px; float:left;"></div>
+  <div style="width: 100px; float:right; right:5px; top:60px; position:relative;">
+    {% comment %}<div class="course-list"><ul id="c_{{ course.b36 }}" class="session-holder"></ul></div>{% endcomment %}
+    <button id="add_class" class="ui-button ui-state-default ui-corner-all">Add meeting</button>
+  </div>
+  <div id="clear"></div>
+</div>
+<form method="post" action=".">
+<div id="general_host_info" style="display:none;">
+  <input type="checkbox" name="check_sunday" {% if host_class.sunday %}checked{% endif %} />
+  <input type="checkbox" name="check_monday" {% if host_class.monday %}checked{% endif %} />
+  <input type="checkbox" name="check_tuesday" {% if host_class.tuesday %}checked{% endif %} />
+  <input type="checkbox" name="check_wednesday" {% if host_class.wednesday %}checked{% endif %} />
+  <input type="checkbox" name="check_thursday" {% if host_class.thursday %}checked{% endif %} />
+  <input type="checkbox" name="check_friday" {% if host_class.friday %}checked{% endif %} />
+  <input type="checkbox" name="check_saturday" {% if host_class.saturday %}checked{% endif %} />
+  <input type="hidden" id="general_time" value="{{ host_class.meeting_time }}" />
+  <input type="hidden" id="start_date" value="{{ host_class.disp_start_date|date:"m/d/Y" }}" />
+</div>
+<div id="hiders" style="display:none;">
+  {% for session in host_sessions %}
+    {{ session.render_hidden_input }}
+  {% endfor %}
+</div>
+{% if class_creater %}
+<button name="next" value="1">Next</button>
+<button name="finish" >Finish</button>
+{% else %}
+<button name="save">Save</button>
+{% endif %}
+</form>
+{% endblock left %}
+
+{% block part3info %}
+<ul class="menu">
+  <li><b>Edit</b> the content of a session by clicking on the pencil icon.</li>
+</ul>
+{% endblock part3info %}
+
+{% block verybottom %}
+<div id="dialog_add" title="New meeting"> </div>
+<div id="dialog_edit" title="Editing"></div>
+<div id="dialog_ajax" title="Meeting"></div>
+{% endblock verybottom %}

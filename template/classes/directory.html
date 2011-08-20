@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load show_stars %}
+{% block title %}Class directory {% if categories %} - {{ categories }}{% endif %}{% endblock title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/search.css" type="text/css" />
+<style>
+  .mcmenu { 
+    padding: 0 2em;margin:0;
+    list-style: none;
+    width: 30em;  
+  }
+  .mcmenu li {
+    float: left;
+    width: 7em;
+  }
+</style>
+<script>
+</script>
+{% show_stars_script %}
+<script type="text/javascript">
+<!--
+//-->
+</script>
+{% endblock stylesheets %}
+
+{% block left %}
+{% if curr_category %}
+<h1>{{ curr_category }}</h1>
+<p>Up to: {{ curr_category.get_parent_html }}</p>
+{% else %}
+<h1>Main directory</h1>
+{% endif %}
+{% if children %}
+{#<h2 style="padding:0;margin:0;font-size:10pt;">Subcategories</h2>#}
+<div style="margin-bottom:10px;">
+<ul class="mcmenu">
+  {% for child in children %}
+  <li><a href="{{ child.get_absolute_url }}">{{ child }}</a></li>
+  {% endfor %}
+</ul>
+<div id="clear"></div>
+</div>
+{% endif %}
+{% if paginator %}
+{% with courses_page as search_results %}
+  {% include "search/incl/class_list.html" %}
+{% endwith %}
+{% else %}
+  <p>Category has no classes.</p>
+{% endif %}
+      
+{% endblock left %}
+
+{% block right %}
+{% endblock right %}

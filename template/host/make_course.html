@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}create a course{% endblock title %}
+
+{% block stylesheets%}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/make.css" type="text/css" />
+<style>
+  #id_title { font-size: 16pt; }
+</style>
+{% endblock stylesheets %}
+
+{% block main %}
+<div id="makeLeft">
+<form action="." method="POST">
+<table>
+<table>
+  {{ course_form.as_table }}
+</table>
+<p><button>Submit</button></p>
+</form>
+</div>
+<div id="makeRight">
+  <h1>Making a class</h1>
+  <p>Be sure to use </p>
+</div>
+{% endblock main %}

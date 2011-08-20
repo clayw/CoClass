@@ -1,0 +1,146 @@
+{% extends "host/base.html" %}
+{% block title %}Host a class{% endblock title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/make.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/search.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}ui/css/south-street/jquery-ui-1.8.1.custom.css" type="text/css" />
+<style>
+th {
+  width: 100px;
+  font-size:8pt;
+  text-align:left;
+  vertical-align:top;
+}
+#id_title {
+  font-size:15pt;
+}
+#id_description, #id_url, #id_title, #id_prerequisites {
+  width: 400px; 
+}
+#id_description {
+  height: 250px;
+}
+#id_prerequisites {
+  height: 50px;
+}
+</style>
+<script type="text/javascript" src="{{ MEDIA_URL }}pkg/jquery.form.js"></script>
+<script type="text/javascript">
+google.load("jqueryui", "1.8.1");
+
+var playlist_default = 'http://www.youtube.com/view_play_list?p=....';
+function playlist_focus(box) { if (playlist_default == box.value) box.value=''; $(box).css({'color':'black'}); }
+function playlist_blur(box) { if (this.value == '') {box.value=playlist_default; $(box).css({'color':'#bbb'}); }}
+function list_info_url_setter() {
+  var $tabs = $('#tabs-container').tabs();
+  $('.areq').click(function() {
+    //var reqid = $(this).attr('href');
+    $.ajax({
+      type: "GET",
+      url: $(this).attr('href'),
+      data: 'a=1',
+      beforeSend: function(html) {
+        document.getElementById("info-filler").innerHTML= '<div id="flash">Loading results... <img src="{{ MEDIA_URL }}img/ajax-loader.gif" /> </div>';
+        $('a[href=#info-filler]').parent().show();
+        $tabs.tabs('select', 3);
+      },
+      success: function(html) {
+        html = '<a href="#back-search">&lt;&lt; Back to search results...</a>' + html
+        $("#info-filler").html(html);
+        $('a[href=#back-search]').click(function() { $tabs.tabs('select',1)});
+      },
+    });
+    return false;
+  });
+}
+$().ready(function() {
+  list_info_url_setter();
+  var $tabs = $('#tabs-container').tabs();
+  $('a[href=#info-filler]').parent().hide();
+  $("#flash, #searchres").hide();
+  //var opts_selector = '#id_prerequisites, #id_from_date, #id_institution, #id_course_number, #id_url, #id_instructors';
+  //$(opts_selector).parent().parent().hide();
+  //$('a[href=#more_opts]').click(function () { $(this).hide(); $(opts_selector).parent().parent().show(); return false; });
+  $('#playlistform').submit(function() {
+    $.ajax({
+      type: "GET",
+      url: '/h/search/',
+      data: $('#playlistform').formSerialize() + '&a=1',
+      cache: false,
+      beforeSend: function(html) {
+        $('#make').html('<img src="{{ MEDIA_URL }}img/ajax-loader.gif" />');
+        $tabs.tabs('select', 0);
+      },
+      success: function(html) {
+        $('#make').html(html);  
+      }
+    });
+    return false; 
+  });
+  $("#searchform").submit(function() {
+    course_query = $('#coursebox').val();
+    if (course_query != '') {
+      $.ajax({
+        type: "GET",
+        url: "/h/sf/",
+        data: $('#searchform').formSerialize(),
+        cache: false,
+        beforeSend: function(html) {
+          document.getElementById("choices").innerHTML = '';
+          $("#flash").show();
+          $("#searchres").show();
+          $("#spquery").html(course_query);
+        },
+        success: function(html) {
+          $("#choices").append(html);
+          $("#flash").hide();
+          list_info_url_setter();
+        }
+      });
+    }
+    return false;
+  });
+});
+</script>
+{% endblock stylesheets %}
+
+{% block left %}
+<div id="tabs-container">
+  <ul> 
+    <li><a href="#make">Make</a></li>
+    <li><a href="#search">Search</a></li>
+    <li><a href="#playlist">Playlist</a></li>
+    <li style="display:none; float:right;"><a href="#info-filler">Info</a></li>
+  </ul>
+  <div id="make">
+    {% include "host/incl/make_form.html" %}
+  </div>
+  <div id="search">
+    <form action="" method="get" id="searchform">
+      <p><input type="text" name="q" id="coursebox" /> <input type="submit" value="search" id="searchbutton" /></p>
+      </form>
+      {% comment %}<div id="searchres">Search results for <span id="spquery"></span></div>{% endcomment %}
+    <div id="flash">Loading results... <img src="{{ MEDIA_URL }}img/ajax-loader.gif" /> </div>
+    <div id="choices">{#{% include "search/incl/class_list.html" %}#}</div>
+  
+  </div>
+  <div id="playlist">
+    <p>Enter the address of a YouTube playlist and a class will be generated from it</p>
+    <form action="." method="get" id="playlistform">
+      <p>
+      <input type="text" name="playlist_url" id="playlistbox" value="{{ playlist_url }}" onfocus="playlist_focus(this)" onblur="playlist_blur(this)" /> 
+        <input type="submit" id="playlistbutton" value="Fetch" />
+      </p>
+    </form>
+  </div>
+  <div id="info-filler"></div>
+</div>
+{% endblock left %}
+
+{% block part1info %}
+  <p><span class="highlight">Search</span> and Pick the course you want to host from the list.</p>
+  <p>Enter a YouTube <span class="highlight">playlist</span> to generate a course automatically.</p>
+  <p><span class="highlight">Make</span> a course from scratch.</p>
+{% endblock part1info %}
+

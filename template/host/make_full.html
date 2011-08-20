@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}Hosting {{ course.title }}{% endblock title %}
+
+{% block stylesheets%}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/make.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/calendar.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}ui/css/south-street/jquery-ui-1.8.1.custom.css" type="text/css" />
+<script type="text/javascript">
+google.load("jqueryui", "1.8.1");
+$(function() {
+    currdate = new Date();
+    make_calendar('calendar', true);
+    
+    $('#datepicker').datepicker({ minDate: 0 });
+
+    $('#fill-cal').click(function () {
+      var sDate = $('#datepicker').datepicker('getDate');
+      if (!sDate) { alert('select a start date first!'); return false; }
+      if (!any_selected_day()) { alert('select day a day of the week first!'); return false; }
+      sDate.setDate(sDate.getDate() -1);
+
+      var holder = $('.session-holder');
+      for (var ses in holder) {
+        if (holder[ses].id) {
+          var ses_id = holder[ses].id;
+          var ses_sp = ses_id.split('_');
+          if (ses_sp[0] == 'c') {
+            var childs = $('#' + ses_id).children();
+            for (var i in childs) {
+              if (childs[i].className == 'session') {
+                do {sDate.setDate(sDate.getDate() + 1); } while(not_selected_day(sDate.getDay())) ;
+                var hdate = hyphenDate(sDate.toDateString()) +'-'+ $(hdate).children().length;
+                $('#h_'+childs[i].id).val(hdate);
+              }
+            }
+          }
+        }
+      }
+      make_calendar('calendar');
+      return false;
+    });
+    /*
+    $('.window .close').click(function (e) {  
+      e.preventDefault();  
+      $('#bg-mask, .window').hide();  
+    });       
+    $('#bg-mask').click(function () {  
+      $(this).hide();  
+      $('.window').hide();  
+    }); 
+    */
+    $('button[name=save]').click(function(e) {
+      /*
+      e.preventDefault();
+      var mask_height = $(document).height();
+      var mask_width = $(window).width();
+      $('#bg-mask').css({'width':mask_width, 'height':mask_height});
+      $('#bg-mask').show();
+      var minH = $(window).height();
+      var minW = $(window).width();
+      $('#dialog').css('top', minH/2-$('dialog').height()/2);
+      $('#dialog').css('left', minW/2-$('dialog').width()/2);
+      $('#dialog').show(); 
+      */
+/*
+      $.post('/mk/', {
+        data: 'q=' + course_query,
+        cache: false,
+        beforeSend: function(html) {
+*/
+
+    });
+    $('#days a').click(function() {
+      var selector = $('input[name=check_'+$(this).attr('href').substring(1)+']');
+      if ($(this).hasClass('unselected-day')) {
+        $(this).removeClass('unselected-day');
+        $(this).addClass('selected-day');
+        selector.attr('checked', true);
+      } else { 
+        $(this).removeClass('selected-day');
+        $(this).addClass('unselected-day');
+        selector.attr('checked', false);
+      }
+      return false;
+    });
+    $('form :checkbox').css('display', 'none');
+    var checkboxes = $('form :checkbox');
+    for (var i in checkboxes) {
+      if (checkboxes[i].checked) {
+        $('a[href=#' + checkboxes[i].name.substring(6)+']').click();
+      }
+    }
+    $('a[href*=addphoto]').click(function () {
+      $('#addrform').append('<tr><td></td><td colspan="2"><input type="file" name=photo_1" /></td></tr>');  
+      return false;
+    });
+    $('select[name=place]').change(function () {
+      ;
+      if ($(this).val() == '-1') {
+        $('#addressform').css('display', '');
+      } else if ($('#addressform').css('display') != 'none') {
+        $('#addressform').css('display', 'none');
+      }
+    });
+    $('input[name=name]').keyup(function (e) {
+      $('select[name=place] :selected').html($('input[name=name]').val());
+    });
+});
+</script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/calendar.js"></script>
+<style type="text/css">
+</style>
+{% endblock stylesheets %}
+
+{% block main %}
+<div id="makeLeft">
+  <h1><a class="external" target="_blank" href="{{ course.url }}">{{ course.title }}</a> {% if course.institution %}<span id="c_num">({{ course.course_number }} from {{ course.institution }})</span>{% endif %}</h1>
+  <form action="." method="POST" enctype="multipart/form-data">
+    <h3>Where do you want to host it?</h3>
+    <select name="place" {% if not places %}style="display:none;"{% endif %}>
+    {% if places %}
+      {% for place in places %}
+      <option value="{{ place.id }}">{{ place.name }}</option> 
+      {% endfor %}
+    {% endif %}
+      <option value="-1">New place...</option>
+    </select>
+    <div id="addressform" {% if places %}style="display:none;"{% endif %}>
+      <table id="addrform">
+        <tr><td>Name</td><td><input type="text" name="name" value="New place..." /></td><td>Country</td><td><select name="country"><option>United States</option</select></td></tr>
+        <tr><td>Address</td><td><input type="text" name="addr" /></td><td>Apt/Unit/etc.</td><td><input type="text" name="apt" /></td></tr>
+        <tr><td>City</td><td><input type="text" name="city" /></td><td>State</td><td><input type="text" name="state" /></td></tr>
+        <tr><td>Postal Code</td><td><input type="text" name="zip" /></td><td>{% if not user.is_authenticated %}Email{% endif %}</td><td>{% if not user.is_authenticated %}<input type="text" name="email" />{% endif %}</td></tr>
+        <tr><td>Photo</td><td colspan="2"><input type="file" name="photo_0" /><td><a href="#addphoto">Add another...</a></td></tr>
+      </table>
+    </div>
+<h3>Move the course session to the dates in the calendar</h3>
+<table><tr>
+<td>Start date: <input type="text" id="datepicker" name="starting_date" /></td>
+<td>Meeting time: 
+  {% include "time_select.html" %}
+</td></tr></table>
+  <ul id="days">
+    <li><a href="#sunday" class="unselected-day">Sunday</a><input type="checkbox" name="check_sunday" style="display:none;" /></li>
+    <li><a href="#monday" class="unselected-day">Monday</a> <input type="checkbox" name="check_monday" style="display:none;" /></li>
+    <li><a href="#tuesday" class="unselected-day">Tuesday</a><input type="checkbox" name="check_tuesday" style="display:none;" /></li>
+    <li><a href="#wednesday" class="unselected-day">Wednesday</a><input type="checkbox" name="check_wednesday" style="display:none;" /></li>
+    <li><a href="#thursday" class="unselected-day">Thursday</a><input type="checkbox" name="check_thursday" style="display:none;" /></li>
+    <li><a href="#friday" class="unselected-day">Friday</a><input type="checkbox" name="check_friday" style="display:none;" /></li>
+    <li><a href="#saturday" class="unselected-day">Saturday</a><input type="checkbox" name="check_saturday" style="display:none;" /></li>
+  </ul>
+<p><button id="fill-cal">Fill calendar</button>
+<div id="caldragger"><div id="calendar"></div></div>
+<div id="hiders" style="display:none;">
+  {% for session in sessions %}
+  <input type="hidden" id="h_{{ session.pk }}" name="c_{{ course.pk }}_s_{{ session.pk }}" value="c_{{course.pk }}-{{ session.session_number }}" class="hidden-out" />
+  {% endfor %}
+</div>
+<button name="save">Save</button>
+</form>
+</div>
+
+<div id="makeRight">
+  <h1><span class="highlight">Step 2: Set the place and dates</span></h1>
+  <p>To use the calendar tool you need:</p>
+  <ol class="menu">
+    <li>a starting date,</li>
+    <li>a daily meeting time,</li>
+    <li>the days of the week you want to meet.</li>
+  </ol>
+  <p>This course has {{ course.session.all|length }} sessions. </p>
+  <ul id="c_{{ course.pk }}" class="session-holder">
+  </ul>
+  {% comment %}
+  <ul id="right_creator" class="session-holder">
+  </ul>
+  {% endcomment %}
+</div>
+
+
+{% endblock main %}
+
+{% block verybottom %}
+<div id="boxes">
+  <div id="dialog" class="window">
+    <p>test modal</p>
+    <a href="#" class="close">close</a>
+  </div>
+  <div class="dialog" id="sure-"></div>
+  <div id="bg-mask"></div>
+</div>
+{% endblock verybottom %}

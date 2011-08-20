@@ -1,0 +1,35 @@
+{% extends "accounts/base.html" %}
+
+{% block right %}
+
+<form method="POST" action="." enctype="multipart/form-data">
+  {% comment %}
+  <h2>List some of your interests</h2>
+  {{ form.interests.errors }}
+  {{ form.interests }}
+  <h2>Describe your education and background</h2>
+  {{ form.background.errors }}
+  {{ form.background }}
+  <h2>Change profile pic</h2>
+  <p><input type="file" id="photo-0" name="photo_0" /></p>
+  {% endcomment %}
+  {% comment %} <p><a href="#addpic">Add picture</a></p>{% endcomment %}
+  {{ form.errors }}
+  <table class="acc-table">
+    <tr>
+      <td class="label">Interests:</td>
+      <td>{{ form.interests }}</td>
+    </tr>
+    <tr>
+      <td class="label">Backround/ Educational:</td>
+      <td>{{ form.background }}</td>
+    </tr>
+    <tr>
+      <td class="label">Pic:</td>
+      <td><input type="file" id="photo-0" name="photo_0" /></td>
+    </tr>
+  </table>
+  <p><button>Save profile</button></p>
+</form>
+
+{% endblock right %}

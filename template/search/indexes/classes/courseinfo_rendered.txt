@@ -1,0 +1,5 @@
+  <tr class="result">
+    <td><div style="width:100%;"><a href="{{ object.get_absolute_url }}" class="areq">{{ object.title }}</a><span style="font-size:7pt;">{% if object.instructors %} by {{ object.instructors }}{% endif %}</span></div><div style="font-size:7pt;">{% if object.from_date %}{{ object.from_date }}, {% endif %}{{ object.course_info_session.all|length }} sessions</div></td>
+    <td>{{ object.description|truncatewords_html:25 }}</td>
+    <td>{{ object.get_rating }}</td>
+  </tr>

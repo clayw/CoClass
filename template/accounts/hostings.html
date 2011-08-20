@@ -1,0 +1,12 @@
+{% extends "accounts/base.html" %}
+
+{% block right %}
+{% if hostings %}
+{% for hosting in hostings %}
+{{ hosting }}
+{% endfor %}
+{% else %}
+<h3>You haven't hosted or taken any courses. <a href="/search/">Search</a> for something that interests you.</h3>
+{% endif %}
+{% endblock right %}
+

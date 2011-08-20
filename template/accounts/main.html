@@ -1,0 +1,32 @@
+{% extends "accounts/base.html" %}
+{% load i18n %} 
+{% load time_tags %}
+
+{% block right %}
+<h1>{% trans "Inbox" %}</h1>
+{% if message_list %}
+<table class="messages">
+    <thead>
+        <tr><th id="sender">{% trans "Sender" %}</th><th id="subject">{% trans "Subject" %}</th><th id="received">{% trans "Received" %}</th><th id="action">{% trans "Action" %}</th></tr>
+    </thead>
+    <tbody>
+  {% for message in message_list %} 
+    <tr>
+      <td>{% with message.sender as user %}{% include "user_pic_small.html" %}{% endwith %}</td>
+      <td>
+        {% if message.new %}<strong>{% endif %}
+        {% if message.replied %}<em>{% endif %}
+        <a href="{{message.get_absolute_url }}">{{ message.subject }}</a>
+        {% if message.replied %}</em>{% endif %}
+        {% if message.new %}</strong>{% endif %}</td>
+      <td>{{ message.sent_at|date_diff }}</td>
+      <td><a href="{% url django_messages.views.delete message.id %}">{% trans "delete" %}</a></td>
+    </tr>
+  {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>You have no messages.</p>
+{% endif %}
+{% endblock right %}
+

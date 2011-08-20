@@ -1,0 +1,17 @@
+{% load letter_tags %}
+<div id="result_number">
+  <div style="float:left; width:250px;">Showing {{ search_results.start_index }}-{{ search_results.end_index }} of {{ paginator.count }} {% block searchname %}{% endblock searchname %}</div> 
+  <div style="float:right; text-align:right; width:250px;">{% if search_results.has_previous %}<a href="{{ mod_path }}&page={{ search_results.previous_page_number }}">Prev</a>{% endif %} {% for page_number in paginator.page_range %}{% if page_number == search_results.page %}{{ page_number }}{% else %}<a href="{{ mod_path }}&page={{ page_number }}">{{ page_number }}</a>{% endif %} {% endfor %} {% if search_results.has_next %}<a href="{{ mod_path }}&page={{ search_results.next_page_number }}">Next</a>{% endif %}</div>
+  <div id="clear"></div>
+</div>
+<div id="searchlist">
+  <table>
+  {% block header %}{% endblock %}
+  {% block list %}
+  {% for result in search_results.object_list %}
+  {#{{ result.rendered|safe }}#}
+  {{ result|render_with_letter }}
+  {% endfor %}
+  {% endblock %}
+  </table>
+</div>

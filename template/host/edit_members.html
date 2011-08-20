@@ -1,0 +1,13 @@
+{% extends "host/base_edit.html" %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/make.css" type="text/css" />
+{% endblock %}
+
+{% block left %}
+  <table>
+  {% for hm in members %}
+  <tr><td>{% with hm.user as user %}{% include "user_pic_small.html" %}{% endwith %}</td><td>{% if hm.expert %}<a href="/h/chx/{{ host_class.b36 }}/remove/expert/{{ hm.user.username }}/">Remove expert</a>{% else %}<a href="/h/chx/{{ host_class.b36 }}/add/expert/{{ hm.user.username }}/">Make expert</a>{% endif %}</td><td>{% if hm.editor %}<a href="/h/chx/{{ host_class.b36 }}/remove/admin/{{ hm.user.username }}/">Remove Admin</a>{% else %}<a href="/h/chx/{{ host_class.b36 }}/add/admin/{{ hm.user.username }}/">Make admin</a>{% endif %}</td></tr>
+  {% endfor %}
+  </table>
+{% endblock left %}

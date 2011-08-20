@@ -1,0 +1,46 @@
+{% extends ext_template %}
+{% block title %}Invite{% endblock title %}
+
+{% block stylesheets%}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/make.css" type="text/css" />
+<script>
+$(function() {
+});
+</script>
+<style type="text/css">
+  textarea { height:100px; width: 200px; }
+</style>
+{% endblock stylesheets %}
+
+{% block left %}
+<form action="." method="POST">
+<div>
+  <div style="width:330px; float:left;">
+  <h1>Invite people</h1>
+    <p>Enter a personalized message</p>
+    <p><textarea name="message" id="message" style="width:250px;height:150px">{{ message }}</textarea></p>
+    <p><button name="send">Send Invites</button>{% if class_creater %}<button name=skip">Skip</button>{% endif %}
+  </div>
+  <div style="float:left;">
+    <h2>Contacts</h2>
+    {% if contacts %}
+    <table>
+      {% for contact in contacts %}
+      <tr><td>{{ contact.to_contact.get_full_name }}:</td><td><input type="checkbox" name="inv-{{ contact.to_contact }}" /></td></tr>
+      {% endfor %}
+    </table>
+  {% else %}
+  <p>You have no contacts to invite.</p>
+  {% endif %}
+    <h2>Enter Emails</h2>
+    <p style="font-size:7pt;">Enter email addresses separated by comma</p>
+    <p><textarea name="emails" id="emails"></textarea></p>
+  </div>
+  <div id="clear"></div>
+</div>
+</form>
+{% endblock left %}
+{% block part4info %}
+<p>Enter emails to invite</p>
+{% endblock part4info %}
+

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}sign in{% endblock title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}sty/signin.css" type="text/css" />
+{% endblock stylesheets %}
+{% block googleload_unsecure %}
+{% endblock googleload_unsecure %}
+
+{% block main %}  
+{% if user.is_authenticated %}
+<div><p>You are already signed in! <a href="/accounts/logout/">Logout</a></p></div>
+{% else %}
+  <div id="mainLeftSign">
+    {% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+    {% endif %}
+    
+    <form action="{% url django.contrib.auth.views.login %}" method="POST">{% csrf_token %}
+      <table>
+        <tr>
+          <td>Username</td>
+          <td>{{ form.username }}</td>
+        </tr>
+        <tr>
+          <td>{{ form.password.label_tag }}</td>
+          <td>{{ form.password }}</td>
+        </tr>
+      </table>
+      <p style="font-size:7pt;"><button>Sign in</button> <a href="/accounts/lostpass/">recover lost password</a> </p>
+      <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+  </div>
+  <div id="mainRightSign">
+    <h4>Need an account?</h4>
+    <p><a href="/accounts/signup/">Sign up</a></p>
+    <h4>Or sign in with Facebook</h4>
+    <p><fb:login-button autologoutlink="true"></fb:login-button></p>
+
+    {% include "facebook_js" %}
+  </div>
+{% endif %}
+{% endblock main %}    
+
